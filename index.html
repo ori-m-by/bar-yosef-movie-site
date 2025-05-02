@@ -4,55 +4,51 @@
 <head>
   <meta charset="UTF-8">
   <title>🎬 אתר הסרטים המשפחתי</title>
-  <style>
-    body { font-family: sans-serif; direction: rtl; text-align: right; padding: 20px; background: #f9f9f9; }
-    table { border-collapse: collapse; width: 100%; background: white; margin-top: 20px; }
-    th, td { padding: 10px; border: 1px solid #ccc; vertical-align: top; }
-    th { background-color: #eee; }
-    a { color: #0077cc; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- PapaParse -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 </head>
-<body>
+<body class="bg-light">
 
-<h1>🎥 רשימת הסרטים</h1>
-<p>נטען מתוך Google Sheets (פורסם כ-CSV)</p>
-
-<table id="movieTable"></table>
+<div class="container mt-5">
+  <h1 class="text-center mb-4">🎥 רשימת הסרטים</h1>
+  <p class="text-center">נטען אוטומטית מתוך Google Sheets (CSV)</p>
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped" id="movieTable"></table>
+  </div>
+</div>
 
 <script>
   const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRy3QmBmzq23a0pVmV7GBNa8ryYiKiIes8VclVTfCiwqPRITOxxSrZt8dT9aTCkpQ/pub?output=csv";
 
   fetch(csvUrl)
     .then(response => response.text())
-    .then(data => {
-      const rows = data.trim().split('\n').map(r => r.split(','));
+    .then(csvData => {
+      const results = Papa.parse(csvData, { header: true });
+      const rows = results.data;
       const table = document.getElementById("movieTable");
 
-      if (!rows || rows.length === 0 || !rows[0]) {
-        table.innerHTML = "<tr><td>⚠️ לא ניתן לטעון נתונים מהטבלה – בדוק שהקובץ תקין</td></tr>";
-        return;
-      }
-
+      // יצירת כותרות
       const thead = document.createElement("thead");
       const headRow = document.createElement("tr");
-      const headers = rows[0];
-
-      headers.forEach(col => {
+      const headers = Object.keys(rows[0] || {});
+      headers.forEach(header => {
         const th = document.createElement("th");
-        th.textContent = col;
+        th.textContent = header;
         headRow.appendChild(th);
       });
       thead.appendChild(headRow);
       table.appendChild(thead);
 
+      // יצירת תוכן
       const tbody = document.createElement("tbody");
-      rows.slice(1).forEach(row => {
+      rows.forEach(row => {
         const tr = document.createElement("tr");
-        row.forEach((cell, i) => {
+        headers.forEach(header => {
           const td = document.createElement("td");
-          const header = headers[i] || "";
-
+          const cell = row[header] || "";
           if (header.includes("קישור") && cell.startsWith("http")) {
             const a = document.createElement("a");
             a.href = cell;
@@ -62,7 +58,6 @@
           } else {
             td.textContent = cell;
           }
-
           tr.appendChild(td);
         });
         tbody.appendChild(tr);
@@ -72,7 +67,7 @@
     .catch(error => {
       console.error("שגיאה בטעינת הטבלה:", error);
       document.getElementById("movieTable").innerHTML =
-        "<tr><td>⚠️ שגיאה בטעינת הטבלה מה-CSV</td></tr>";
+        "<tr><td>⚠️ שגיאה בטעינת הטבלה</td></tr>";
     });
 </script>
 

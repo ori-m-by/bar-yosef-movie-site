@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8">
+  <title>🎬 אתר הסרטים המשפחתי</title>
+  <style>
+    body { font-family: sans-serif; direction: rtl; text-align: right; padding: 20px; background: #f9f9f9; }
+    table { border-collapse: collapse; width: 100%; background: white; margin-top: 20px; }
+    th, td { padding: 10px; border: 1px solid #ccc; vertical-align: top; }
+    th { background-color: #eee; }
+    a { color: #0077cc; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<h1>🎥 רשימת הסרטים</h1>
+<p>נטען מתוך Google Sheets עם API</p>
+
+<table id="movieTable"></table>
+
+<script>
+  const apiKey = "AIzaSyDbCGt19L9DmwUDeONhHVPnbWXVUBaTVcs";
+  const spreadsheetId = "1fipo99hdn-PZv2GwNVBd5boXTnmcuD_d";
+  const range = "Sheet1!A1:Z1000";
+
+  fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}?key=${apiKey}`)
+    .then(response => response.json())
+    .then(data => {
+      const rows = data.values;
+      const table = document.getElementById("movieTable");
+
+      // כותרות
+      const thead = document.createElement("thead");
+      const headRow = document.createElement("tr");
+      rows[0].forEach(col => {
+        const th = document.createElement("th");
+        th.textContent = col;
+        headRow.appendChild(th);
+      });
+      thead.appendChild(headRow);
+      table.appendChild(thead);
+
+      // תוכן
+      const tbody = document.createElement("tbody");
+      rows.slice(1).forEach(row => {
+        const tr = document.createElement("tr");
+        row.forEach((cell, i) => {
+          const td = document.createElement("td");
+          const header = rows[0][i];
+
+          // אם זו עמודת קישור
+          if (header.includes("קישור") && cell.startsWith("http")) {
+            const a = document.createElement("a");
+            a.href = cell;
+            a.target = "_blank";
+            a.textContent = header.includes("IMDb") ? "ל-IMDb" : "צפייה";
+            td.appendChild(a);
+          } else {
+            td.textContent = cell;
+          }
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+    })
+    .catch(error => {
+      console.error("שגיאה בטעינת הטבלה:", error);
+      document.getElementById("movieTable").innerHTML =
+        "<tr><td>⚠️ שגיאה בטעינת הטבלה מה-API</td></tr>";
+    });
+</script>
+
+</body>
+</html>

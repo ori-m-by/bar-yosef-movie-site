@@ -29,10 +29,16 @@
       const rows = data.trim().split('\n').map(r => r.split(','));
       const table = document.getElementById("movieTable");
 
-      // כותרות
+      if (!rows || rows.length === 0 || !rows[0]) {
+        table.innerHTML = "<tr><td>⚠️ לא ניתן לטעון נתונים מהטבלה – בדוק שהקובץ תקין</td></tr>";
+        return;
+      }
+
       const thead = document.createElement("thead");
       const headRow = document.createElement("tr");
-      rows[0].forEach(col => {
+      const headers = rows[0];
+
+      headers.forEach(col => {
         const th = document.createElement("th");
         th.textContent = col;
         headRow.appendChild(th);
@@ -40,13 +46,12 @@
       thead.appendChild(headRow);
       table.appendChild(thead);
 
-      // תוכן
       const tbody = document.createElement("tbody");
       rows.slice(1).forEach(row => {
         const tr = document.createElement("tr");
         row.forEach((cell, i) => {
           const td = document.createElement("td");
-          const header = rows[0][i];
+          const header = headers[i] || "";
 
           if (header.includes("קישור") && cell.startsWith("http")) {
             const a = document.createElement("a");

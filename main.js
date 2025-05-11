@@ -31,17 +31,23 @@ fetch(csvUrl)
       card.className = "col-12 col-md-6"; // שני כרטיסים בשורה
 
       card.innerHTML = `
-        <div class="card h-100 shadow-sm">
-          <img src="${picture}" class="card-img-top" alt="${hebname}">
-          <div class="card-body">
+       <div class="card h-100 shadow-sm">
+    <div class="card-body d-flex">
+        <!-- תמונה בצד שמאל -->
+        <img src="${picture}" alt="${hebname}" class="card-img-left" style="max-width: 150px; height: auto; margin-right: 15px;">
+        
+        <!-- כיתוב בצד ימין -->
+        <div class="card-text">
             <h5 class="card-title">${hebname}</h5>
             <h6 class="card-subtitle mb-2 text-muted">${engname}</h6>
-            <p class="card-text"><strong>שנה:</strong> ${year}<br><strong>ז'אנר:</strong> ${genre}</p>
-            <p class="card-text">${description}</p>
-            ${viewinglink.startsWith("http") ? `<a href="${viewinglink}" target="_blank" class="btn btn-primary">▶️ צפייה</a>` : ""}
+            <p><strong>שנה:</strong> ${year}<br><strong>ז'אנר:</strong> ${genra}</p>
+            <p>${description}</p>
+            ${viewinglink.startsWith("http") ? `<a href="${viewinglink}" target="_blank" class="btn btn-primary"> ▶️ צפייה </a>` : ""}
             ${imdblink.startsWith("http") ? `<a href="${imdblink}" target="_blank" class="btn btn-secondary ms-2">📺 IMDb</a>` : ""}
-          </div>
         </div>
+    </div>
+</div>
+
       `;
 
       // הוספת הכרטיס לאזור התצוגה

@@ -44,7 +44,7 @@ fetch(csvUrl)
             <div class="card-text">
                 <h5 class="card-title">${hebname}</h5>
                 <h6 class="card-subtitle mb-2 text-muted">${engname}</h6>
-                <<p><strong>שנה:</strong> ${year}<br><strong>ז'אנר:</strong> ${genre}</p>
+                <p><strong>שנה:</strong> ${year}<br><strong>ז'אנר:</strong> ${genre}</p>
                 <p>${description}</p>
                 ${viewinglink.startsWith("http") ? `<a href="${viewinglink}" target="_blank" class="btn btn-primary"> ▶️ צפייה </a>` : ""}
                 ${imdblink.startsWith("http") ? `<a href="${imdblink}" target="_blank" class="btn btn-secondary ms-2">📺 IMDb</a>` : ""}

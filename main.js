@@ -18,7 +18,7 @@ fetch(csvUrl)
       const score = row["ציון IMDb"] || "";
       const pg = row["סרט לילדים / מבוגרים"] || "";
       const imdblink = row["קישור ל-IMDb"] || "";
-      const genra = row["ז'אנר"] || "";
+      const genre = row["ז'אנר"] || "";
       const awards = row["פרסים והישגים בולטים"] || "";
       const viewinglink = row["קישור לדרייב"] || "";
       const year = row["שנת יציאה"] || "";
@@ -26,15 +26,17 @@ fetch(csvUrl)
       const picture = row["קישור לתמונה"] || "";
       const trailer = row["טריילר"] || "";
 
+      // יצירת כרטיס עם תמונה
       const card = document.createElement("div");
-      card.className = "col";
+      card.className = "col-12 col-md-6"; // שני כרטיסים בשורה
 
       card.innerHTML = `
         <div class="card h-100 shadow-sm">
+          <img src="${picture}" class="card-img-top" alt="${hebname}">
           <div class="card-body">
             <h5 class="card-title">${hebname}</h5>
             <h6 class="card-subtitle mb-2 text-muted">${engname}</h6>
-            <p class="card-text"><strong>שנה:</strong> ${year}<br><strong>ז'אנר:</strong> ${genra}</p>
+            <p class="card-text"><strong>שנה:</strong> ${year}<br><strong>ז'אנר:</strong> ${genre}</p>
             <p class="card-text">${description}</p>
             ${viewinglink.startsWith("http") ? `<a href="${viewinglink}" target="_blank" class="btn btn-primary">▶️ צפייה</a>` : ""}
             ${imdblink.startsWith("http") ? `<a href="${imdblink}" target="_blank" class="btn btn-secondary ms-2">📺 IMDb</a>` : ""}
@@ -42,11 +44,10 @@ fetch(csvUrl)
         </div>
       `;
 
+      // הוספת הכרטיס לאזור התצוגה
       container.appendChild(card);
     });
   })
   .catch(error => {
-    console.error("⚠️ שגיאה בטעינת נתוני הסרטים:", error);
-    const container = document.getElementById("moviecontainer");
-    container.innerHTML = `<div class="alert alert-danger text-center">⚠️ שגיאה בטעינת הנתונים. נסו לרענן את העמוד.</div>`;
+    console.error("שגיאה בטעינת הנתונים:", error);
   });

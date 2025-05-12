@@ -1,175 +1,64 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>🎬 סרטים וסדרות לצפייה ישירה</title>
+<head>
+  <meta charset="UTF-8">
+  <title>🎬 סרטים לצפייה</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .movie-card:hover {
+      z-index: 5;
+    }
 
-    <!-- Bootstrap CSS -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+    .left-side {
+      width: 40%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-    <!-- עיצוב מותאם -->
-    <style>
-      .movie-card {
-        transition: transform 0.3s ease;
-        transform-origin: center;
-      }
+    .trailer-container {
+      width: 100%;
+      height: 200px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      overflow: hidden;
+      display: none;
+    }
 
-      .movie-card:hover {
-        transform: scale(1.05);
-        z-index: 5;
-      }
+    .movie-card:hover .trailer-container {
+      display: block;
+    }
 
-      .left-side {
-        width: 40%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
+    .movie-image {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      border-radius: 8px;
+    }
 
-      .trailer-container {
-        width: 100%;
-        height: 200px;
-        margin-bottom: 10px;
-        border-radius: 10px;
-        overflow: hidden;
-        display: none;
-      }
+    .movie-content {
+      width: 60%;
+      padding: 10px 15px;
+    }
 
-      .movie-card:hover .trailer-container {
-        display: block;
-      }
+    .extra-info {
+      display: none;
+    }
 
-      .movie-image {
-        width: 100%;
-        height: auto;
-        object-fit: cover;
-        border-radius: 8px;
-      }
+    .movie-card:hover .extra-info {
+      display: block;
+    }
+  </style>
+</head>
+<body class="bg-light">
+  <div class="container py-5">
+    <h1 class="text-center mb-4">🎬 הסרטים שלנו</h1>
+    <div id="moviecontainer" class="row row-cols-1 row-cols-md3 g-4"></div>
+  </div>
 
-      .movie-content {
-        width: 60%;
-        padding: 10px 15px;
-      }
-    </style>
-
-    <!-- PapaParse -->
-    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  </head>
-  <body class="bg-light">
-    <div class="container py-5">
-      <h1 class="text-center mb-4">🎬 הסרטים שלנו</h1>
-      <div id="moviecontainer" class="row row-cols-1 row-cols-md-3 g-4"></div>
-    </div>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- קוד ראשי -->
-    <script>
-      const csvUrl =
-        "https://docs.google.com/spreadsheets/d/e/2PACX-1vRy3QmBmzq23a0pVmV7GBNa8ryYiKiIes8VclVTfCiwqPRITOxxSrZt8dT9aTCkpQ/pub?output=csv";
-
-      fetch(csvUrl)
-        .then((res) => res.text())
-        .then((csvDATA) => {
-          const result = Papa.parse(csvDATA, { header: true });
-          const rows = result.data;
-          const container = document.getElementById("moviecontainer");
-
-          rows.forEach((row) => {
-            const hebname = row["שם הסרט בעברית"] || "";
-            const engname = row["שם הסרט באנגלית"] || "";
-            const director = row["במאי"] || "";
-            const mainactors = row["שחקנים ראשיים"] || "";
-            const producer = row["מפיק"] || "";
-            const writer = row["תסריטאי"] || "";
-            const score = row["ציון IMDb"] || "";
-            const pg = row["סרט לילדים / מבוגרים"] || "";
-            const imdblink = row["קישור ל-IMDb"] || "";
-            const genre = row["ז'אנר"] || "";
-            const awards = row["פרסים והישגים בולטים"] || "";
-            const viewinglink = row["קישור לדרייב"] || "";
-            const year = row["שנת יציאה"] || "";
-            const description = row["תיאור קצר"] || "";
-            const picture =
-              row["קישור לתמונה"] ||
-              "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/%D7%AA%D7%9E%D7%95%D7%A0%D7%94%20%D7%9C%D7%90%D7%AA%D7%A8.png";
-            const trailer = row["טריילר"] || "";
-
-            const card = document.createElement("div");
-            card.className = "col-12 col-md-6 mb-4";
-
-            const cardInner = document.createElement("div");
-            cardInner.className = "card h-100 shadow-sm movie-card";
-
-            const trailerWrapper = document.createElement("div");
-            trailerWrapper.className = "trailer-container";
-            trailerWrapper.dataset.trailer = trailer;
-
-            const img = document.createElement("img");
-            img.src = picture;
-            img.alt = hebname;
-            img.className = "movie-image";
-            img.onerror = function () {
-              this.onerror = null;
-              this.src =
-                "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/%D7%AA%D7%9E%D7%95%D7%A0%D7%94%20%D7%9C%D7%90%D7%AA%D7%A8.png";
-            };
-
-            const contentDiv = document.createElement("div");
-            contentDiv.className = "movie-content";
-            contentDiv.innerHTML = `
-              <h5 class="card-title">${hebname}</h5>
-              <h6 class="card-subtitle mb-2 text-muted">${engname}</h6>
-              <p><strong>שנה:</strong> ${year}<br><strong>ז'אנר:</strong> ${genre}</p>
-              <p>${description}</p>
-              <p><strong>במאי:</strong> ${director}<br>
-              <strong>שחקנים:</strong> ${mainactors}<br>
-              <strong>תסריטאי:</strong> ${writer}<br>
-              <strong>מפיק:</strong> ${producer}<br>
-              <strong>IMDB:</strong> ${score}<br>
-              <strong>פרסים:</strong> ${awards}<br>
-              <strong>קהל יעד:</strong> ${pg}</p>
-              ${viewinglink.startsWith("http") ? `<a href="${viewinglink}" target="_blank" class="btn btn-primary"> ▶️ צפייה </a>` : ""}
-              ${imdblink.startsWith("http") ? `<a href="${imdblink}" target="_blank" class="btn btn-secondary ms-2">📺 IMDb</a>` : ""}
-            `;
-
-            const leftSide = document.createElement("div");
-            leftSide.className = "left-side";
-            leftSide.appendChild(trailerWrapper);
-            leftSide.appendChild(img);
-
-            const rowEl = document.createElement("div");
-            rowEl.className = "d-flex flex-row";
-            rowEl.appendChild(leftSide);
-            rowEl.appendChild(contentDiv);
-
-            cardInner.appendChild(rowEl);
-            card.appendChild(cardInner);
-            container.appendChild(card);
-
-            // טריילר ב-hover
-            cardInner.addEventListener("mouseenter", () => {
-              cardInner.style.transform = "scale(1.05)";
-              if (trailer && !trailerWrapper.innerHTML) {
-                const embedUrl = trailer.replace("watch?v=", "embed/") + "?autoplay=1&mute=1&rel=0&controls=1";
-                trailerWrapper.innerHTML = `<iframe width="100%" height="100%" src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-              }
-            });
-
-            cardInner.addEventListener("mouseleave", () => {
-              cardInner.style.transform = "scale(1)";
-              trailerWrapper.innerHTML = "";
-            });
-          });
-        })
-        .catch((error) => {
-          console.error("\u05E9\u05D2\u05D9\u05D0\u05D4 \u05D1\u05D8\u05E2\u05D9\u05E0\u05EA \u05D4\u05E0\u05EA\u05D5\u05E0\u05D9\u05DD:", error);
-        });
-    </script>
-  </body>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="main.js"></script>
+</body>
 </html>

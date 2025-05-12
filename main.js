@@ -1,53 +1,28 @@
 const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRy3QmBmzq23a0pVmV7GBNa8ryYiKiIes8VclVTfCiwqPRITOxxSrZt8dT9aTCkpQ/pub?output=csv";
+
 let allMovies = [];
 
-const container = document.getElementById("moviecontainer");
-const searchInput = document.getElementById("searchInput");
-const yearFilter = document.getElementById("yearFilter");
-const ratingFilter = document.getElementById("ratingFilter");
-
-fetch(csvUrl)
-  .then(res => res.text())
-  .then(csvDATA => {
-    const result = Papa.parse(csvDATA, { header: true });
-    allMovies = result.data.filter(row => row["שם הסרט בעברית"]); // להסיר שורות ריקות
-
-    populateYearFilter(allMovies);
-    renderMovies(allMovies);
-  });
-
-function populateYearFilter(movies) {
-  const years = [...new Set(movies.map(m => m["שנת יציאה"]).filter(Boolean))].sort().reverse();
-  years.forEach(y => {
-    const option = document.createElement("option");
-    option.value = y;
-    option.textContent = y;
-    yearFilter.appendChild(option);
-  });
-}
-
-function renderMovies(movies) {
+function renderMovies(data) {
+  const container = document.getElementById("moviecontainer");
   container.innerHTML = "";
 
-  movies.forEach(row => {
-    const {
-      "שם הסרט בעברית": hebname = "",
-      "שם הסרט באנגלית": engname = "",
-      "במאי": director = "",
-      "שחקנים ראשיים": mainactors = "",
-      "מפיק": producer = "",
-      "תסריטאי": writer = "",
-      "ציון IMDb": score = "",
-      "סרט לילדים / מבוגרים": pg = "",
-      "קישור ל-IMDb": imdblink = "",
-      "ז'אנר": genre = "",
-      "פרסים והישגים בולטים": awards = "",
-      "קישור לדרייב": viewinglink = "",
-      "שנת יציאה": year = "",
-      "תיאור קצר": description = "",
-      "קישור לתמונה": picture = "default.jpg",
-      "טריילר": trailer = ""
-    } = row;
+  data.forEach(row => {
+    const hebname = row["שם הסרט בעברית"] || "";
+    const engname = row["שם הסרט באנגלית"] || "";
+    const director = row["במאי"] || "";
+    const mainactors = row["שחקנים ראשיים"] || "";
+    const producer = row["מפיק"] || "";
+    const writer = row["תסריטאי"] || "";
+    const score = row["ציון IMDb"] || "";
+    const pg = row["סרט לילדים / מבוגרים"] || "";
+    const imdblink = row["קישור ל-IMDb"] || "";
+    const genre = row["ז'אנר"] || "";
+    const awards = row["פרסים והישגים בולטים"] || "";
+    const viewinglink = row["קישור לדרייב"] || "";
+    const year = row["שנת יציאה"] || "";
+    const description = row["תיאור קצר"] || "";
+    const picture = row["קישור לתמונה"] || "default-image.jpg";
+    const trailer = row["טריילר"] || "";
 
     const card = document.createElement("div");
     card.className = "col";
@@ -76,26 +51,25 @@ function renderMovies(movies) {
     img.src = picture;
     img.alt = hebname;
     img.className = "movie-image";
-    img.onerror = () => {
-      img.src = "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/%D7%AA%D7%9E%D7%95%D7%A0%D7%94%20%D7%9C%D7%90%D7%AA%D7%A8.png";
+    img.onerror = function () {
+      this.src = "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/%D7%AA%D7%9E%D7%95%D7%A0%D7%94%20%D7%9C%D7%90%D7%AA%D7%A8.png";
     };
 
     const contentDiv = document.createElement("div");
     contentDiv.className = "movie-content";
-
     contentDiv.innerHTML = `
-      <h5>${hebname}</h5>
-      <h6 class="text-muted">${engname}</h6>
+      <h5 class="card-title">${hebname}</h5>
+      <h6 class="card-subtitle mb-2 text-muted">${engname}</h6>
       <p><strong>שנה:</strong> ${year}<br><strong>ז'אנר:</strong> ${genre}</p>
       <p>${description}</p>
       <div class="extra-info">
         <p><strong>במאי:</strong> ${director}<br>
-        <strong>שחקנים:</strong> ${mainactors}<br>
-        <strong>תסריטאי:</strong> ${writer}<br>
-        <strong>מפיק:</strong> ${producer}<br>
-        <strong>IMDB:</strong> ${score}<br>
-        <strong>פרסים:</strong> ${awards}<br>
-        <strong>קהל יעד:</strong> ${pg}</p>
+           <strong>שחקנים:</strong> ${mainactors}<br>
+           <strong>תסריטאי:</strong> ${writer}<br>
+           <strong>מפיק:</strong> ${producer}<br>
+           <strong>IMDB:</strong> ${score}<br>
+           <strong>פרסים:</strong> ${awards}<br>
+           <strong>קהל יעד:</strong> ${pg}</p>
         ${viewinglink.startsWith("http") ? `<a href="${viewinglink}" target="_blank" class="btn btn-primary"> ▶️ צפייה </a>` : ""}
         ${imdblink.startsWith("http") ? `<a href="${imdblink}" target="_blank" class="btn btn-secondary ms-2">📺 IMDb</a>` : ""}
       </div>
@@ -106,41 +80,60 @@ function renderMovies(movies) {
     leftSide.appendChild(trailerWrapper);
     leftSide.appendChild(img);
 
-    const rowDiv = document.createElement("div");
-    rowDiv.className = "d-flex flex-row";
-    rowDiv.appendChild(leftSide);
-    rowDiv.appendChild(contentDiv);
+    const row = document.createElement("div");
+    row.className = "d-flex flex-row";
+    row.appendChild(leftSide);
+    row.appendChild(contentDiv);
 
-    cardInner.appendChild(rowDiv);
+    cardInner.appendChild(row);
     card.appendChild(cardInner);
     container.appendChild(card);
   });
 }
 
 function applyFilters() {
-  const query = searchInput.value.toLowerCase();
-  const selectedYear = yearFilter.value;
-  const selectedRating = parseFloat(ratingFilter.value || 0);
+  const year = document.getElementById("yearFilter").value;
+  const rating = document.getElementById("ratingFilter").value;
+  const genre = document.getElementById("genreFilter").value;
+  const search = document.getElementById("searchInput").value.trim().toLowerCase();
 
   const filtered = allMovies.filter(movie => {
-    const combinedText = `
-      ${movie["שם הסרט בעברית"] || ""}
-      ${movie["שם הסרט באנגלית"] || ""}
-      ${movie["במאי"] || ""}
-      ${movie["שחקנים ראשיים"] || ""}
-      ${movie["תיאור קצר"] || ""}
-    `.toLowerCase();
-
-    const yearMatch = !selectedYear || movie["שנת יציאה"] === selectedYear;
-    const ratingMatch = !selectedRating || parseFloat(movie["ציון IMDb"]) >= selectedRating;
-    const textMatch = combinedText.includes(query);
-
-    return yearMatch && ratingMatch && textMatch;
+    return (!year || movie["שנת יציאה"] === year) &&
+           (!rating || movie["ציון IMDb"] === rating) &&
+           (!genre || (movie["ז'אנר"] || "").includes(genre)) &&
+           (!search || [movie["שם הסרט בעברית"], movie["שם הסרט באנגלית"], movie["במאי"], movie["שחקנים ראשיים"]].some(field => (field || "").toLowerCase().includes(search)));
   });
 
   renderMovies(filtered);
 }
 
-searchInput.addEventListener("input", applyFilters);
-yearFilter.addEventListener("change", applyFilters);
-ratingFilter.addEventListener("change", applyFilters);
+fetch(csvUrl)
+  .then(res => res.text())
+  .then(csvDATA => {
+    const result = Papa.parse(csvDATA, { header: true });
+    allMovies = result.data;
+
+    // Populate filters
+    const years = [...new Set(allMovies.map(m => m["שנת יציאה"]).filter(Boolean))].sort();
+    const ratings = [...new Set(allMovies.map(m => m["ציון IMDb"]).filter(Boolean))].sort((a, b) => b - a);
+    const genres = [...new Set(allMovies.flatMap(m => (m["ז'אנר"] || "").split(",").map(g => g.trim())))]
+      .filter(Boolean)
+      .sort();
+
+    const yearFilter = document.getElementById("yearFilter");
+    years.forEach(y => yearFilter.innerHTML += `<option value="${y}">${y}</option>`);
+
+    const ratingFilter = document.getElementById("ratingFilter");
+    ratings.forEach(r => ratingFilter.innerHTML += `<option value="${r}">${r}</option>`);
+
+    const genreFilter = document.getElementById("genreFilter");
+    genres.forEach(g => genreFilter.innerHTML += `<option value="${g}">${g}</option>`);
+
+    document.getElementById("yearFilter").addEventListener("change", applyFilters);
+    document.getElementById("ratingFilter").addEventListener("change", applyFilters);
+    document.getElementById("genreFilter").addEventListener("change", applyFilters);
+    document.getElementById("searchInput").addEventListener("input", applyFilters);
+
+    renderMovies(allMovies);
+  })
+  .catch(error => console.error("שגיאה בטעינת הנתונים:", error));

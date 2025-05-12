@@ -5,7 +5,6 @@ fetch(csvUrl)
   .then(csvDATA => {
     const result = Papa.parse(csvDATA, { header: true });
     const rows = result.data;
-
     const container = document.getElementById("moviecontainer");
 
     rows.forEach(row => {
@@ -34,6 +33,9 @@ fetch(csvUrl)
       cardInner.style.transition = "transform 0.3s ease";
       cardInner.style.transformOrigin = "center";
 
+      const trailerWrapper = document.createElement("div");
+      trailerWrapper.className = "trailer-container";
+
       cardInner.addEventListener("mouseenter", () => {
         cardInner.style.transform = "scale(1.05)";
         if (trailer && !trailerWrapper.innerHTML) {
@@ -46,48 +48,40 @@ fetch(csvUrl)
         cardInner.style.transform = "scale(1)";
       });
 
-      // אלמנט הטריילר
-      const trailerWrapper = document.createElement("div");
-      trailerWrapper.className = "trailer-container";
-      trailerWrapper.dataset.trailer = trailer;
-
-      // אלמנט התמונה
       const img = document.createElement("img");
       img.src = picture;
       img.alt = hebname;
       img.className = "movie-image";
       img.onerror = function () {
-        console.warn(`⚠️ התמונה נכשלה בטעינה: ${picture}`);
-        this.onerror = null;
         this.src = "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/%D7%AA%D7%9E%D7%95%D7%A0%D7%94%20%D7%9C%D7%90%D7%AA%D7%A8.png";
       };
 
-      // עמודת התוכן הימנית
       const contentDiv = document.createElement("div");
       contentDiv.className = "movie-content";
+
       contentDiv.innerHTML = `
         <h5 class="card-title">${hebname}</h5>
         <h6 class="card-subtitle mb-2 text-muted">${engname}</h6>
         <p><strong>שנה:</strong> ${year}<br><strong>ז'אנר:</strong> ${genre}</p>
         <p>${description}</p>
-        <p><strong>במאי:</strong> ${director}<br>
-           <strong>שחקנים:</strong> ${mainactors}<br>
-           <strong>תסריטאי:</strong> ${writer}<br>
-           <strong>מפיק:</strong> ${producer}<br>
-           <strong>IMDB:</strong> ${score}<br>
-           <strong>פרסים:</strong> ${awards}<br>
-           <strong>קהל יעד:</strong> ${pg}</p>
-        ${viewinglink.startsWith("http") ? `<a href="${viewinglink}" target="_blank" class="btn btn-primary"> ▶️ צפייה </a>` : ""}
-        ${imdblink.startsWith("http") ? `<a href="${imdblink}" target="_blank" class="btn btn-secondary ms-2">📺 IMDb</a>` : ""}
+        <div class="extra-info">
+          <p><strong>במאי:</strong> ${director}<br>
+             <strong>שחקנים:</strong> ${mainactors}<br>
+             <strong>תסריטאי:</strong> ${writer}<br>
+             <strong>מפיק:</strong> ${producer}<br>
+             <strong>IMDB:</strong> ${score}<br>
+             <strong>פרסים:</strong> ${awards}<br>
+             <strong>קהל יעד:</strong> ${pg}</p>
+          ${viewinglink.startsWith("http") ? `<a href="${viewinglink}" target="_blank" class="btn btn-primary"> ▶️ צפייה </a>` : ""}
+          ${imdblink.startsWith("http") ? `<a href="${imdblink}" target="_blank" class="btn btn-secondary ms-2">📺 IMDb</a>` : ""}
+        </div>
       `;
 
-      // אלמנט הצד השמאלי
       const leftSide = document.createElement("div");
       leftSide.className = "left-side";
       leftSide.appendChild(trailerWrapper);
       leftSide.appendChild(img);
 
-      // מבנה כללי
       const row = document.createElement("div");
       row.className = "d-flex flex-row";
       row.appendChild(leftSide);

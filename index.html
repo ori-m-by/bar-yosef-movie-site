@@ -2,12 +2,13 @@
 <html>
     <head>
                 <style>
-            .card {
+                      .card {
   transition: transform 0.3s ease;
+  transform-origin: center center;
 }
 
 .card:hover {
-  transform: scale(1.03);
+  transform: scale(1.05);
   z-index: 5;
 }
 
@@ -25,9 +26,14 @@
   margin-bottom: 10px;
   border-radius: 10px;
   overflow: hidden;
+  display: none;
 }
 
-        </style>
+.card:hover .card-trailer {
+  display: block;
+}
+
+                </style>
 
         <meta charset="UTF-8">
         <title>🎬 סרטים וסדרות לצפייה ישירה</title>

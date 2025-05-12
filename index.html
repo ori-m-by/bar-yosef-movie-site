@@ -49,31 +49,38 @@
     .movie-card:hover .extra-info {
       display: block;
     }
+
+    .filter-bar {
+      margin-bottom: 30px;
+    }
+
+    .form-select, .form-control {
+      max-width: 200px;
+      display: inline-block;
+      margin-left: 10px;
+    }
   </style>
 </head>
 <body class="bg-light">
   <div class="container py-5">
     <h1 class="text-center mb-4">🎬 הסרטים שלנו</h1>
 
-    <div class="row row-cols-1 row-cols-md-4 mb-4">
-      <div class="col mb-2">
-        <select id="yearFilter" class="form-select">
-          <option value="">כל השנים</option>
-        </select>
-      </div>
-      <div class="col mb-2">
-        <select id="ratingFilter" class="form-select">
-          <option value="">כל הדירוגים</option>
-        </select>
-      </div>
-      <div class="col mb-2">
-        <select id="genreFilter" class="form-select">
-          <option value="">כל הז'אנרים</option>
-        </select>
-      </div>
-      <div class="col mb-2">
-        <input type="text" id="searchInput" class="form-control" placeholder="חיפוש לפי שם, במאי או שחקן">
-      </div>
+    <!-- סרגל סינון וחיפוש -->
+    <div class="filter-bar text-center mb-4">
+      <input type="text" id="searchInput" class="form-control" placeholder="חיפוש לפי שם, במאי, שחקנים, תיאור" oninput="applyFilters()">
+      <select id="yearFilter" class="form-select mt-2" onchange="applyFilters()">
+        <option value="">כל השנים</option>
+      </select>
+      <select id="ratingFilter" class="form-select mt-2" onchange="applyFilters()">
+        <option value="0">כל הדירוגים</option>
+        <option value="9">9 ומעלה</option>
+        <option value="8">8 ומעלה</option>
+        <option value="7">7 ומעלה</option>
+        <option value="6">6 ומעלה</option>
+      </select>
+      <select id="genreFilter" class="form-select mt-2" onchange="applyFilters()">
+        <option value="">כל הז'אנרים</option>
+      </select>
     </div>
 
     <div id="moviecontainer" class="row row-cols-1 row-cols-md-2 g-4"></div>

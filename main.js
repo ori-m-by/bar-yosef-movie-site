@@ -82,12 +82,14 @@ fetch(csvUrl)
       leftSide.appendChild(trailerWrapper);
       leftSide.appendChild(img);
 
-      const row = document.createElement("div");
-      row.className = "d-flex flex-row";
-      row.appendChild(leftSide);
-      row.appendChild(contentDiv);
+      const cardRow = document.createElement("div");
+cardRow.className = "d-flex flex-row";
+cardRow.appendChild(leftSide);
+cardRow.appendChild(contentDiv);
 
-      cardInner.appendChild(row);
+
+
+      cardInner.appendChild(cardRow);
       card.appendChild(cardInner);
       container.appendChild(card);
     });

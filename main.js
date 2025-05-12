@@ -1,50 +1,113 @@
+// main.js
+
 const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRy3QmBmzq23a0pVmV7GBNa8ryYiKiIes8VclVTfCiwqPRITOxxSrZt8dT9aTCkpQ/pub?output=csv";
 
-let allMovies = [];
+const state = {
+  year: "",
+  genre: "",
+  score: "",
+  search: ""
+};
+
+const filters = {
+  year: new Set(),
+  genre: new Set(),
+  score: new Set()
+};
+
+fetch(csvUrl)
+  .then(res => res.text())
+  .then(csvDATA => {
+    const result = Papa.parse(csvDATA, { header: true });
+    const rows = result.data.filter(row => row["שם הסרט בעברית"]);
+    generateFilterOptions(rows);
+    renderMovies(rows);
+
+    document.getElementById("filter-year").addEventListener("change", e => {
+      state.year = e.target.value;
+      renderMovies(rows);
+    });
+    document.getElementById("filter-genre").addEventListener("change", e => {
+      state.genre = e.target.value;
+      renderMovies(rows);
+    });
+    document.getElementById("filter-score").addEventListener("change", e => {
+      state.score = e.target.value;
+      renderMovies(rows);
+    });
+    document.getElementById("search-input").addEventListener("input", e => {
+      state.search = e.target.value.toLowerCase();
+      renderMovies(rows);
+    });
+  })
+  .catch(error => {
+    console.error("שגיאה בטעינת הנתונים:", error);
+  });
+
+function generateFilterOptions(rows) {
+  rows.forEach(row => {
+    if (row["שנת יציאה"]) filters.year.add(row["שנת יציאה"].trim());
+    if (row["ז'אנר"]) filters.genre.add(row["ז'אנר"].trim());
+    if (row["ציון IMDb"]) filters.score.add(row["ציון IMDb"].trim());
+  });
+
+  const yearSelect = document.getElementById("filter-year");
+  const genreSelect = document.getElementById("filter-genre");
+  const scoreSelect = document.getElementById("filter-score");
+
+  filters.year.forEach(y => yearSelect.innerHTML += `<option value="${y}">${y}</option>`);
+  filters.genre.forEach(g => genreSelect.innerHTML += `<option value="${g}">${g}</option>`);
+  filters.score.forEach(s => scoreSelect.innerHTML += `<option value="${s}">${s}</option>`);
+}
 
 function renderMovies(data) {
   const container = document.getElementById("moviecontainer");
   container.innerHTML = "";
 
-  data.forEach(row => {
-    const hebname = row["שם הסרט בעברית"] || "";
-    const engname = row["שם הסרט באנגלית"] || "";
-    const director = row["במאי"] || "";
-    const mainactors = row["שחקנים ראשיים"] || "";
-    const producer = row["מפיק"] || "";
-    const writer = row["תסריטאי"] || "";
-    const score = row["ציון IMDb"] || "";
-    const pg = row["סרט לילדים / מבוגרים"] || "";
-    const imdblink = row["קישור ל-IMDb"] || "";
-    const genre = row["ז'אנר"] || "";
-    const awards = row["פרסים והישגים בולטים"] || "";
-    const viewinglink = row["קישור לדרייב"] || "";
-    const year = row["שנת יציאה"] || "";
-    const description = row["תיאור קצר"] || "";
-    const picture = row["קישור לתמונה"] || "default-image.jpg";
-    const trailer = row["טריילר"] || "";
+  data.filter(movie => {
+    const matchesYear = !state.year || movie["שנת יציאה"] === state.year;
+    const matchesGenre = !state.genre || movie["ז'אנר"] === state.genre;
+    const matchesScore = !state.score || movie["ציון IMDb"] === state.score;
+    const text = `\${movie["שם הסרט בעברית"]} \${movie["שם הסרט באנגלית"]} \${movie["במאי"]} \${movie["שחקנים ראשיים"]}`.toLowerCase();
+    const matchesSearch = !state.search || text.includes(state.search);
+    return matchesYear && matchesGenre && matchesScore && matchesSearch;
+  }).forEach(movie => {
+    const hebname = movie["שם הסרט בעברית"] || "";
+    const engname = movie["שם הסרט באנגלית"] || "";
+    const director = movie["במאי"] || "";
+    const mainactors = movie["שחקנים ראשיים"] || "";
+    const producer = movie["מפיק"] || "";
+    const writer = movie["תסריטאי"] || "";
+    const score = movie["ציון IMDb"] || "";
+    const pg = movie["סרט לילדים / מבוגרים"] || "";
+    const imdblink = movie["קישור ל-IMDb"] || "";
+    const genre = movie["ז'אנר"] || "";
+    const awards = movie["פרסים והישגים בולטים"] || "";
+    const viewinglink = movie["קישור לדרייב"] || "";
+    const year = movie["שנת יציאה"] || "";
+    const description = movie["תיאור קצר"] || "";
+    const picture = movie["קישור לתמונה"] || "default-image.jpg";
+    const trailer = movie["טריילר"] || "";
+
+    const cardWrapper = document.createElement("div");
+    cardWrapper.className = "col-12 col-md-6 mb-4";
 
     const card = document.createElement("div");
-    card.className = "col";
-
-    const cardInner = document.createElement("div");
-    cardInner.className = "card h-100 shadow-sm movie-card";
-    cardInner.style.transition = "transform 0.3s ease";
-    cardInner.style.transformOrigin = "center";
+    card.className = "card h-100 shadow-sm movie-card";
 
     const trailerWrapper = document.createElement("div");
     trailerWrapper.className = "trailer-container";
 
-    cardInner.addEventListener("mouseenter", () => {
-      cardInner.style.transform = "scale(1.05)";
+    card.addEventListener("mouseenter", () => {
+      card.style.transform = "scale(1.05)";
       if (trailer && !trailerWrapper.innerHTML) {
         const embedUrl = trailer.replace("watch?v=", "embed/") + "?autoplay=1&mute=1&rel=0&controls=1";
         trailerWrapper.innerHTML = `<iframe width="100%" height="100%" src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
       }
     });
 
-    cardInner.addEventListener("mouseleave", () => {
-      cardInner.style.transform = "scale(1)";
+    card.addEventListener("mouseleave", () => {
+      card.style.transform = "scale(1)";
     });
 
     const img = document.createElement("img");
@@ -80,60 +143,13 @@ function renderMovies(data) {
     leftSide.appendChild(trailerWrapper);
     leftSide.appendChild(img);
 
-    const row = document.createElement("div");
-    row.className = "d-flex flex-row";
-    row.appendChild(leftSide);
-    row.appendChild(contentDiv);
+    const rowDiv = document.createElement("div");
+    rowDiv.className = "d-flex flex-row";
+    rowDiv.appendChild(leftSide);
+    rowDiv.appendChild(contentDiv);
 
-    cardInner.appendChild(row);
-    card.appendChild(cardInner);
-    container.appendChild(card);
+    card.appendChild(rowDiv);
+    cardWrapper.appendChild(card);
+    container.appendChild(cardWrapper);
   });
 }
-
-function applyFilters() {
-  const year = document.getElementById("yearFilter").value;
-  const rating = document.getElementById("ratingFilter").value;
-  const genre = document.getElementById("genreFilter").value;
-  const search = document.getElementById("searchInput").value.trim().toLowerCase();
-
-  const filtered = allMovies.filter(movie => {
-    return (!year || movie["שנת יציאה"] === year) &&
-           (!rating || movie["ציון IMDb"] === rating) &&
-           (!genre || (movie["ז'אנר"] || "").includes(genre)) &&
-           (!search || [movie["שם הסרט בעברית"], movie["שם הסרט באנגלית"], movie["במאי"], movie["שחקנים ראשיים"]].some(field => (field || "").toLowerCase().includes(search)));
-  });
-
-  renderMovies(filtered);
-}
-
-fetch(csvUrl)
-  .then(res => res.text())
-  .then(csvDATA => {
-    const result = Papa.parse(csvDATA, { header: true });
-    allMovies = result.data;
-
-    // Populate filters
-    const years = [...new Set(allMovies.map(m => m["שנת יציאה"]).filter(Boolean))].sort();
-    const ratings = [...new Set(allMovies.map(m => m["ציון IMDb"]).filter(Boolean))].sort((a, b) => b - a);
-    const genres = [...new Set(allMovies.flatMap(m => (m["ז'אנר"] || "").split(",").map(g => g.trim())))]
-      .filter(Boolean)
-      .sort();
-
-    const yearFilter = document.getElementById("yearFilter");
-    years.forEach(y => yearFilter.innerHTML += `<option value="${y}">${y}</option>`);
-
-    const ratingFilter = document.getElementById("ratingFilter");
-    ratings.forEach(r => ratingFilter.innerHTML += `<option value="${r}">${r}</option>`);
-
-    const genreFilter = document.getElementById("genreFilter");
-    genres.forEach(g => genreFilter.innerHTML += `<option value="${g}">${g}</option>`);
-
-    document.getElementById("yearFilter").addEventListener("change", applyFilters);
-    document.getElementById("ratingFilter").addEventListener("change", applyFilters);
-    document.getElementById("genreFilter").addEventListener("change", applyFilters);
-    document.getElementById("searchInput").addEventListener("input", applyFilters);
-
-    renderMovies(allMovies);
-  })
-  .catch(error => console.error("שגיאה בטעינת הנתונים:", error));

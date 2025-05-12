@@ -33,4 +33,44 @@ fetch(csvUrl)
       const cardWrapper = document.createElement("div");
       cardWrapper.className = "card h-100 shadow-sm";
 
-      const cardBody =
+      const cardBody = document.createElement("div");
+      cardBody.className = "card-body d-flex";
+
+      // יצירת תמונה עם טיפול בשגיאה
+      const img = document.createElement("img");
+      img.src = picture;
+      img.alt = hebname;
+      img.className = "card-img-left";
+      img.style.maxWidth = "150px";
+      img.style.height = "auto";
+      img.style.marginRight = "15px";
+
+      img.onerror = function () {
+        console.warn(`⚠️ התמונה נכשלה בטעינה: ${picture}`);
+        this.onerror = null;
+        this.src = "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/%D7%AA%D7%9E%D7%95%D7%A0%D7%94%20%D7%9C%D7%90%D7%AA%D7%A8.png";
+      };
+
+      // יצירת הטקסט לצד התמונה
+      const textDiv = document.createElement("div");
+      textDiv.className = "card-text";
+      textDiv.innerHTML = `
+        <h5 class="card-title">${hebname}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">${engname}</h6>
+        <p><strong>שנה:</strong> ${year}<br><strong>ז'אנר:</strong> ${genre}</p>
+        <p>${description}</p>
+        ${viewinglink.startsWith("http") ? `<a href="${viewinglink}" target="_blank" class="btn btn-primary"> ▶️ צפייה </a>` : ""}
+        ${imdblink.startsWith("http") ? `<a href="${imdblink}" target="_blank" class="btn btn-secondary ms-2">📺 IMDb</a>` : ""}
+      `;
+
+      // בניית כל המבנה
+      cardBody.appendChild(img);
+      cardBody.appendChild(textDiv);
+      cardWrapper.appendChild(cardBody);
+      card.appendChild(cardWrapper);
+      container.appendChild(card);
+    });
+  })
+  .catch(error => {
+    console.error("שגיאה בטעינת הנתונים:", error);
+  });

@@ -26,19 +26,30 @@ fetch(csvUrl)
       const picture = row["קישור לתמונה"] || "default-image.jpg"; // תמונה ברירת מחדל
       const trailer = row["טריילר"] || "";
 
-      // ניפוי בעיות: הדפסת נתונים לקונסול
-      console.log("שורה:", row);
-      console.log("קישור לתמונה:", picture);
-
+      // יצירת כרטיס עם תמונה
       const card = document.createElement("div");
       card.className = "col-12 col-md-6"; // שני כרטיסים בשורה
 
+      const img = document.createElement("img");
+      img.src = picture;
+      img.alt = hebname;
+      img.className = "card-img-left";
+      img.style.maxWidth = "150px";
+      img.style.height = "auto";
+      img.style.marginRight = "15px";
+
+      // טיפול בשגיאות תמונה
+      img.onerror = function () {
+        console.warn(`⚠️ התמונה נכשלה בטעינה: ${picture}`);
+        this.onerror = null; // למנוע לולאת שגיאות
+        this.src = "https://github.com/ori-m-by/bar-yosef-movie-site/blob/main/%D7%AA%D7%9E%D7%95%D7%A0%D7%94%20%D7%9C%D7%90%D7%AA%D7%A8.png?raw=true"; // תמונת ברירת מחדל
+      };
+
       card.innerHTML = `
-       <div class="card h-100 shadow-sm">
-        <div class="card-body d-flex">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body d-flex">
             <!-- תמונה בצד שמאל -->
-            <img src="${picture}" alt="${hebname}" class="card-img-left" style="max-width: 150px; height: auto; margin-right: 15px;" 
-                 onError="this.onerror=null; this.src='default-image.jpg';">
+            ${img.outerHTML}
             
             <!-- כיתוב בצד ימין -->
             <div class="card-text">
@@ -49,8 +60,8 @@ fetch(csvUrl)
                 ${viewinglink.startsWith("http") ? `<a href="${viewinglink}" target="_blank" class="btn btn-primary"> ▶️ צפייה </a>` : ""}
                 ${imdblink.startsWith("http") ? `<a href="${imdblink}" target="_blank" class="btn btn-secondary ms-2">📺 IMDb</a>` : ""}
             </div>
+          </div>
         </div>
-    </div>
       `;
 
       // הוספת הכרטיס לאזור התצוגה

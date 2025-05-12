@@ -1,6 +1,34 @@
 <!DOCTYPE html>
 <html>
     <head>
+                <style>
+            .card {
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: scale(1.03);
+  z-index: 5;
+}
+
+.card-details {
+  display: none;
+}
+
+.card:hover .card-details {
+  display: block;
+}
+
+.card-trailer {
+  width: 100%;
+  height: 200px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+        </style>
+
         <meta charset="UTF-8">
         <title>🎬 סרטים וסדרות לצפייה ישירה</title>
         <meta name="viewport" content="width=device-width, initial-scale = 1">

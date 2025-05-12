@@ -29,26 +29,8 @@ fetch(csvUrl)
       const card = document.createElement("div");
       card.className = "col-12 col-md-6 mb-4";
 
-      const img = document.createElement("img");
-      img.src = picture;
-      img.alt = hebname;
-      img.className = "card-img-left";
-      img.style.maxWidth = "150px";
-      img.style.height = "auto";
-      img.style.marginRight = "15px";
-
-      img.onerror = function () {
-        console.warn(`⚠️ התמונה נכשלה בטעינה: ${picture}`);
-        this.onerror = null;
-        this.src = "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/%D7%AA%D7%9E%D7%95%D7%A0%D7%94%20%D7%9C%D7%90%D7%AA%D7%A8.png";
-      };
-
-      const trailerWrapper = document.createElement("div");
-      trailerWrapper.className = "card-trailer";
-      trailerWrapper.dataset.trailer = trailer;
-
       const cardInner = document.createElement("div");
-      cardInner.className = "card h-100 shadow-sm";
+      cardInner.className = "card h-100 shadow-sm movie-card";
       cardInner.style.transition = "transform 0.3s ease";
       cardInner.style.transformOrigin = "center";
 
@@ -64,34 +46,54 @@ fetch(csvUrl)
         cardInner.style.transform = "scale(1)";
       });
 
-      const body = document.createElement("div");
-      body.className = "card-body d-flex";
+      // אלמנט הטריילר
+      const trailerWrapper = document.createElement("div");
+      trailerWrapper.className = "trailer-container";
+      trailerWrapper.dataset.trailer = trailer;
 
-      const text = document.createElement("div");
-      text.className = "card-text";
+      // אלמנט התמונה
+      const img = document.createElement("img");
+      img.src = picture;
+      img.alt = hebname;
+      img.className = "movie-image";
+      img.onerror = function () {
+        console.warn(`⚠️ התמונה נכשלה בטעינה: ${picture}`);
+        this.onerror = null;
+        this.src = "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/%D7%AA%D7%9E%D7%95%D7%A0%D7%94%20%D7%9C%D7%90%D7%AA%D7%A8.png";
+      };
 
-      text.innerHTML = `
+      // עמודת התוכן הימנית
+      const contentDiv = document.createElement("div");
+      contentDiv.className = "movie-content";
+      contentDiv.innerHTML = `
         <h5 class="card-title">${hebname}</h5>
         <h6 class="card-subtitle mb-2 text-muted">${engname}</h6>
         <p><strong>שנה:</strong> ${year}<br><strong>ז'אנר:</strong> ${genre}</p>
         <p>${description}</p>
-        <div class="card-details">
-          <p><strong>במאי:</strong> ${director}<br>
-             <strong>שחקנים:</strong> ${mainactors}<br>
-             <strong>תסריטאי:</strong> ${writer}<br>
-             <strong>מפיק:</strong> ${producer}<br>
-             <strong>IMDB:</strong> ${score}<br>
-             <strong>פרסים:</strong> ${awards}<br>
-             <strong>קהל יעד:</strong> ${pg}</p>
-        </div>
+        <p><strong>במאי:</strong> ${director}<br>
+           <strong>שחקנים:</strong> ${mainactors}<br>
+           <strong>תסריטאי:</strong> ${writer}<br>
+           <strong>מפיק:</strong> ${producer}<br>
+           <strong>IMDB:</strong> ${score}<br>
+           <strong>פרסים:</strong> ${awards}<br>
+           <strong>קהל יעד:</strong> ${pg}</p>
         ${viewinglink.startsWith("http") ? `<a href="${viewinglink}" target="_blank" class="btn btn-primary"> ▶️ צפייה </a>` : ""}
         ${imdblink.startsWith("http") ? `<a href="${imdblink}" target="_blank" class="btn btn-secondary ms-2">📺 IMDb</a>` : ""}
       `;
 
-      body.appendChild(img);
-      text.prepend(trailerWrapper);
-      body.appendChild(text);
-      cardInner.appendChild(body);
+      // אלמנט הצד השמאלי
+      const leftSide = document.createElement("div");
+      leftSide.className = "left-side";
+      leftSide.appendChild(trailerWrapper);
+      leftSide.appendChild(img);
+
+      // מבנה כללי
+      const row = document.createElement("div");
+      row.className = "d-flex flex-row";
+      row.appendChild(leftSide);
+      row.appendChild(contentDiv);
+
+      cardInner.appendChild(row);
       card.appendChild(cardInner);
       container.appendChild(card);
     });

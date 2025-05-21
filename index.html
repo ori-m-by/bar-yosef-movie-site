@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
+  <script>
+  // בטעינה — בדיקה אם ה־UUID קיים ולגיטימי
+  window.addEventListener("DOMContentLoaded", () => {
+    const uuid = localStorage.getItem("uuid");
+    // אם אין UUID או שהוא לא מאושר — מפנים אוטומטית ל-login.html
+    if (!uuid) {
+      window.location.href = "login.html";
+    }
+    // אחרת -- נמשיך להציג את התוכן
+  });
+</script>
+
   <meta charset="UTF-8">
   <title>🎬 סרטים לצפייה</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">

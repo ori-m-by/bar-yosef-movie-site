@@ -14,7 +14,7 @@
   </style>
 </head>
 <body>
-  <div class="container" id="loginContainer">
+  <div class="container">
     <h1>כניסה לאתר</h1>
     <form id="loginForm">
       <input id="firstName" placeholder="שם פרטי" required />
@@ -27,12 +27,15 @@
 
   <script src="https://unpkg.com/tabletop@1.6.0"></script>
   <script>
-    const SPREADSHEET_PUBURL = 'https://docs.google.com/spreadsheets/d/e/XXXXX/pubhtml'; 
+    // URL של Publish to web של גליון AuthorizedUsers
+    const SPREADSHEET_PUBURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRzG5L50iJ9S6bP3mI95Ym1KPGFIOVRRBUJswdMkRM1b0BlS_Ej5OgNQRHbMw956kD3BIAKPyC_bmtE/pubhtml?gid=0&single=true';
     const SHEET_NAME = 'AuthorizedUsers';
+    const REDIRECT_URL = 'index.html'; // או לדף הראשי שלך
 
     window.addEventListener("DOMContentLoaded", () => {
       const uuid = localStorage.getItem("uuid");
       if (!uuid) {
+        // אם אין UUID, מפנים לדף הרשמה
         return window.location.href = "https://ori-m-by.github.io/site-auth/";
       }
 
@@ -50,15 +53,15 @@
         Tabletop.init({
           key: SPREADSHEET_PUBURL,
           callback(data) {
-            const rows = data[SHEET_NAME].elements;
+            const rows = (data[SHEET_NAME] || { elements: [] }).elements;
             const ok = rows.some(r =>
-              r.UUID     === uuid &&
-              r.סיסמה    === pwd &&
               r.שם_פרטי  === fname &&
-              r.שם_משפחה === lname
+              r.שם_משפחה === lname &&
+              r.סיסמה    === pwd &&
+              r.UUID      === uuid
             );
             if (ok) {
-              window.location.href = "https://ori-m-by.github.io/bar-yosef-movie-site/";
+              window.location.href = REDIRECT_URL;
             } else {
               msg.textContent = 'שגיאה: כניסה לא מורשית.';
             }

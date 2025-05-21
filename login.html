@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>כניסה לאתר</title>
+  <style>
+    body { font-family:Arial,sans-serif; background:#f0f4f8; display:flex; align-items:center; justify-content:center; height:100vh; margin:0 }
+    .container { background:white; padding:2rem; border-radius:1rem; box-shadow:0 0 20px rgba(0,0,0,0.1); max-width:400px; width:90%; text-align:center }
+    input, button { width:100%; padding:0.5rem; margin-top:1rem; border-radius:0.5rem; border:1px solid #ccc; box-sizing:border-box }
+    button { background:#007bff; color:white; border:none; cursor:pointer }
+    button:hover { background:#0056b3 }
+    .message { margin-top:1rem; color:red }
+  </style>
+</head>
+<body>
+  <div class="container" id="loginContainer">
+    <h1>כניסה לאתר</h1>
+    <form id="loginForm">
+      <input id="firstName" placeholder="שם פרטי" required />
+      <input id="lastName"  placeholder="שם משפחה" required />
+      <input id="password"  type="password" placeholder="הזן סיסמה" required />
+      <button type="submit">כניסה</button>
+    </form>
+    <div class="message" id="message"></div>
+  </div>
+
+  <script src="https://unpkg.com/tabletop@1.6.0"></script>
+  <script>
+    const SPREADSHEET_PUBURL = 'https://docs.google.com/spreadsheets/d/e/XXXXX/pubhtml'; 
+    const SHEET_NAME = 'AuthorizedUsers';
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const uuid = localStorage.getItem("uuid");
+      if (!uuid) {
+        return window.location.href = "https://ori-m-by.github.io/site-auth/";
+      }
+
+      const form = document.getElementById("loginForm");
+      const msg  = document.getElementById("message");
+
+      form.addEventListener("submit", e => {
+        e.preventDefault();
+        msg.textContent = '';
+
+        const fname = document.getElementById("firstName").value.trim();
+        const lname = document.getElementById("lastName").value.trim();
+        const pwd   = document.getElementById("password").value;
+
+        Tabletop.init({
+          key: SPREADSHEET_PUBURL,
+          callback(data) {
+            const rows = data[SHEET_NAME].elements;
+            const ok = rows.some(r =>
+              r.UUID     === uuid &&
+              r.סיסמה    === pwd &&
+              r.שם_פרטי  === fname &&
+              r.שם_משפחה === lname
+            );
+            if (ok) {
+              window.location.href = "https://ori-m-by.github.io/bar-yosef-movie-site/";
+            } else {
+              msg.textContent = 'שגיאה: כניסה לא מורשית.';
+            }
+          },
+          simpleSheet: false
+        });
+      });
+    });
+  </script>
+</body>
+</html>

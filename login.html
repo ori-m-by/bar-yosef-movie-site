@@ -26,68 +26,77 @@
   </div>
 
   <script>
-    // 1. ה-Spreadsheet ID שלך
-    const SPREADSHEET_ID = '1JjygqhtHt22W8baJINiJ7qWgcORZ9cguWyV5_Grsu5c';
-    // 2. gid של הכרטיסייה AuthorizedUsers
-    const GID            = '0';
-    // 3. export URL ל-CSV
-    const CSV_URL        = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${GID}`;
-    const LOGIN_PAGE     = 'login.html';
-    const REDIRECT_URL   = 'index.html';
+  // 1. הגדרות
+  const SPREADSHEET_ID = '1JjygqhtHt22W8baJINiJ7qWgcORZ9cguWyV5_Grsu5c';
+  const GID            = '0';  // gid של הכרטיסייה AuthorizedUsers
+  const CSV_URL        =
+    `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${GID}`;
+  const LOGIN_PAGE     = 'login.html';
+  const REDIRECT_URL   = 'index.html';
 
-    window.addEventListener("DOMContentLoaded", () => {
-      const uuid = localStorage.getItem("uuid");
-      if (!uuid) {
-        // אם אין UUID, מפנים לעמוד הרשמה
-        return window.location.replace(LOGIN_PAGE);
-      }
+  // 2. ברגע שה-DOM מוכן
+  window.addEventListener("DOMContentLoaded", () => {
+    const uuid = localStorage.getItem("uuid");
+    if (!uuid) {
+      // אם אין UUID, מפנים לדף הרשמה
+      return window.location.replace(LOGIN_PAGE);
+    }
 
-      document.getElementById("loginForm").addEventListener("submit", async e => {
-        e.preventDefault();
-        document.getElementById("message").textContent = "";
+    // 3. מאזינים ל-click על הכפתור
+    document.getElementById("loginForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      document.getElementById("message").textContent = "";
 
-        const fname = document.getElementById("firstName").value.trim();
-        const lname = document.getElementById("lastName").value.trim();
-        const pwd   = document.getElementById("password").value;
+      const fname = document.getElementById("firstName").value.trim();
+      const lname = document.getElementById("lastName").value.trim();
+      const pwd   = document.getElementById("password").value;
 
-        try {
-          // מביאים את ה-CSV
-          const res  = await fetch(CSV_URL);
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          const text = await res.text();
+      try {
+        // מביאים את ה-CSV
+        const res  = await fetch(CSV_URL);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
 
-          // מפצלים לפסיקים וממפים לאובייקטים
-          const [headerLine, ...lines] = text.trim().split("\n");
-          const headers = headerLine.split(",");
-          const rows = lines.map(line => {
-            const cols = line.split(",");
-            const obj = {};
-            headers.forEach((h,i) => obj[h] = cols[i] || "");
-            return obj;
-          });
+        // --- התחלת לוג-debug של ה-CSV ---
+        console.group("CSV Debug");
+        console.log("Raw CSV text:", text);
+        const [headerLine, ...lines] = text.trim().split("\n");
+        console.log("Header line:", headerLine);
+        const headers = headerLine.split(",").map(h => h.trim());
+        console.log("Parsed headers:", headers);
+        const rows = lines.map(line => {
+          const cols = line.split(",").map(c => c.trim());
+          const obj = {};
+          headers.forEach((h,i) => obj[h] = cols[i] || "");
+          return obj;
+        });
+        console.log("Parsed rows:", rows);
+        console.groupEnd("CSV Debug");
+        // --- סוף לוג-debug ---
 
-          // בודקים התאמה
-          const ok = rows.some(r =>
-            r['שם פרטי']  === fname &&
-            r['שם משפחה'] === lname &&
-            r['סיסמה']    === pwd &&
-            r['UUID']      === uuid
-          );
+        // בודקים התאמה
+        const ok = rows.some(r =>
+          r['שם פרטי']  === fname &&
+          r['שם משפחה'] === lname &&
+          r['סיסמה']    === pwd &&
+          r['UUID']      === uuid
+        );
 
-          if (ok) {
-            window.location.href = REDIRECT_URL;
-          } else {
-            document.getElementById("message").textContent =
-              "שגיאה: כניסה לא מורשת.";
-          }
-
-        } catch (err) {
-          console.error("Fetch/parse error:", err);
+        if (ok) {
+          window.location.href = REDIRECT_URL;
+        } else {
           document.getElementById("message").textContent =
-            "שגיאה בטעינת הרשאות. נסה שוב מאוחר יותר.";
+            "שגיאה: כניסה לא מורשית.";
         }
-      });
+
+      } catch (err) {
+        console.error("Fetch/parse error:", err);
+        document.getElementById("message").textContent =
+          "שגיאה בטעינת הרשאות. נסה שוב מאוחר יותר.";
+      }
     });
-  </script>
+  });
+</script>
+
 </body>
 </html>

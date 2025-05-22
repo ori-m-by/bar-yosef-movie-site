@@ -5,12 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>כניסה לאתר</title>
   <style>
-    body { font-family:Arial,sans-serif; background:#f0f4f8; display:flex; align-items:center; justify-content:center; height:100vh; margin:0 }
-    .container { background:white; padding:2rem; border-radius:1rem; box-shadow:0 0 20px rgba(0,0,0,0.1); max-width:400px; width:90%; text-align:center }
-    input, button { width:100%; padding:0.5rem; margin-top:1rem; border-radius:0.5rem; border:1px solid #ccc; box-sizing:border-box }
-    button { background:#007bff; color:white; border:none; cursor:pointer }
-    button:hover { background:#0056b3 }
-    .message { margin-top:1rem; color:red }
+    /* ... הסגנונות שלך כמו קודם ... */
   </style>
 </head>
 <body>
@@ -19,55 +14,70 @@
     <form id="loginForm">
       <input id="firstName" placeholder="שם פרטי" required />
       <input id="lastName"  placeholder="שם משפחה" required />
-      <input id="password"  type="password" placeholder="הזן סיסמה" required />
+      <input id="password"  type="password" placeholder="סיסמה" required />
       <button type="submit">כניסה</button>
     </form>
     <div class="message" id="message"></div>
   </div>
 
-  <script src="https://unpkg.com/tabletop@1.6.0"></script>
   <script>
-    // URL של Publish to web של גליון AuthorizedUsers
-    const SPREADSHEET_PUBURL = '1JjygqhtHt22W8baJINiJ7qWgcORZ9cguWyV5_Grsu5c';
-    const SHEET_NAME = 'AuthorizedUsers';
-    const REDIRECT_URL = 'index.html'; // או לדף הראשי שלך
+    const SPREADSHEET_ID = '1JjygqhtHt22W8baJINiJ7qWgcORZ9cguWyV5_Grsu5c';
+    const GID            = '0';    // ה-gid של AuthorizedUsers
+    const CSV_URL        =
+      `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/pub?output=csv&gid=${GID}`;
+    const LOGIN_PAGE     = 'login.html';
+    const REDIRECT_URL   = 'index.html';
 
     window.addEventListener("DOMContentLoaded", () => {
       const uuid = localStorage.getItem("uuid");
       if (!uuid) {
-        // אם אין UUID, מפנים לדף הרשמה
-        return window.location.href = "https://ori-m-by.github.io/site-auth/";
+        return window.location.href = LOGIN_PAGE;
       }
 
-      const form = document.getElementById("loginForm");
-      const msg  = document.getElementById("message");
-
-      form.addEventListener("submit", e => {
+      document.getElementById("loginForm").addEventListener("submit", async e => {
         e.preventDefault();
-        msg.textContent = '';
+        document.getElementById("message").textContent = "";
 
         const fname = document.getElementById("firstName").value.trim();
         const lname = document.getElementById("lastName").value.trim();
         const pwd   = document.getElementById("password").value;
 
-        Tabletop.init({
-          key: SPREADSHEET_PUBURL,
-          callback(data) {
-            const rows = (data[SHEET_NAME] || { elements: [] }).elements;
-            const ok = rows.some(r =>
-              r.שם_פרטי  === fname &&
-              r.שם_משפחה === lname &&
-              r.סיסמה    === pwd &&
-              r.UUID      === uuid
-            );
-            if (ok) {
-              window.location.href = REDIRECT_URL;
-            } else {
-              msg.textContent = 'שגיאה: כניסה לא מורשית.';
-            }
-          },
-          simpleSheet: false
-        });
+        try {
+          // 1) מביאים CSV
+          const res = await fetch(CSV_URL);
+          const text = await res.text();
+
+          // 2) ממירים למערך אובייקטים
+          const [headerLine, ...lines] = text.trim().split("\n");
+          const headers = headerLine.split(",");
+          const rows = lines.map(line => {
+            const cols = line.split(",");
+            return headers.reduce((acc, h, i) => {
+              acc[h] = cols[i];
+              return acc;
+            }, {});
+          });
+
+          // 3) מחפשים התאמה
+          const ok = rows.some(r =>
+            r['שם פרטי']  === fname &&
+            r['שם משפחה'] === lname &&
+            r['סיסמה']    === pwd &&
+            r['UUID']      === uuid
+          );
+
+          if (ok) {
+            window.location.href = REDIRECT_URL;
+          } else {
+            document.getElementById("message").textContent =
+              "שגיאה: כניסה לא מורשית.";
+          }
+
+        } catch (err) {
+          console.error(err);
+          document.getElementById("message").textContent =
+            "שגיאה בטעינת הרשאות. נסה שוב מאוחר יותר.";
+        }
       });
     });
   </script>

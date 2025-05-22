@@ -5,7 +5,12 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>כניסה לאתר</title>
   <style>
-    /* ... הסגנונות שלך כמו קודם ... */
+    body { font-family:Arial,sans-serif; background:#f0f4f8; display:flex; align-items:center; justify-content:center; height:100vh; margin:0 }
+    .container { background:white; padding:2rem; border-radius:1rem; box-shadow:0 0 20px rgba(0,0,0,0.1); max-width:400px; width:90%; text-align:center }
+    input, button { width:100%; padding:0.5rem; margin-top:1rem; border-radius:0.5rem; border:1px solid #ccc; box-sizing:border-box }
+    button { background:#007bff; color:white; border:none; cursor:pointer }
+    button:hover { background:#0056b3 }
+    .message { margin-top:1rem; color:red }
   </style>
 </head>
 <body>
@@ -21,17 +26,20 @@
   </div>
 
   <script>
+    // 1. ה-Spreadsheet ID שלך
     const SPREADSHEET_ID = '1JjygqhtHt22W8baJINiJ7qWgcORZ9cguWyV5_Grsu5c';
-    const GID            = '0';    // ה-gid של AuthorizedUsers
-    const CSV_URL        =
-      `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/pub?output=csv&gid=${GID}`;
+    // 2. gid של הכרטיסייה AuthorizedUsers
+    const GID            = '0';
+    // 3. export URL ל-CSV
+    const CSV_URL        = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${GID}`;
     const LOGIN_PAGE     = 'login.html';
     const REDIRECT_URL   = 'index.html';
 
     window.addEventListener("DOMContentLoaded", () => {
       const uuid = localStorage.getItem("uuid");
       if (!uuid) {
-        return window.location.href = LOGIN_PAGE;
+        // אם אין UUID, מפנים לעמוד הרשמה
+        return window.location.replace(LOGIN_PAGE);
       }
 
       document.getElementById("loginForm").addEventListener("submit", async e => {
@@ -43,22 +51,22 @@
         const pwd   = document.getElementById("password").value;
 
         try {
-          // 1) מביאים CSV
-          const res = await fetch(CSV_URL);
+          // מביאים את ה-CSV
+          const res  = await fetch(CSV_URL);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const text = await res.text();
 
-          // 2) ממירים למערך אובייקטים
+          // מפצלים לפסיקים וממפים לאובייקטים
           const [headerLine, ...lines] = text.trim().split("\n");
           const headers = headerLine.split(",");
           const rows = lines.map(line => {
             const cols = line.split(",");
-            return headers.reduce((acc, h, i) => {
-              acc[h] = cols[i];
-              return acc;
-            }, {});
+            const obj = {};
+            headers.forEach((h,i) => obj[h] = cols[i] || "");
+            return obj;
           });
 
-          // 3) מחפשים התאמה
+          // בודקים התאמה
           const ok = rows.some(r =>
             r['שם פרטי']  === fname &&
             r['שם משפחה'] === lname &&
@@ -70,11 +78,11 @@
             window.location.href = REDIRECT_URL;
           } else {
             document.getElementById("message").textContent =
-              "שגיאה: כניסה לא מורשית.";
+              "שגיאה: כניסה לא מורשת.";
           }
 
         } catch (err) {
-          console.error(err);
+          console.error("Fetch/parse error:", err);
           document.getElementById("message").textContent =
             "שגיאה בטעינת הרשאות. נסה שוב מאוחר יותר.";
         }

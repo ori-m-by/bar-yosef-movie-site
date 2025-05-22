@@ -11,36 +11,49 @@
   <style>html { visibility: hidden; }</style>
 
   <script>
-    // הגדרות
-    const SPREADSHEET_PUBURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRzG5L50iJ9S6bP3mI95Ym1KPGFIOVRRBUJswdMkRM1b0BlS_Ej5OgNQRHbMw956kD3BIAKPyC_bmtE/pubhtml?gid=0&single=true';
-    const SHEET_NAME        = 'AuthorizedUsers';
-    const LOGIN_PAGE        = 'login.html';
+    // 2a. הגדרות
+    const SPREADSHEET_ID = '1JjygqhtHt22W8baJINiJ7qWgcORZ9cguWyV5_Grsu5c';
+    const GID            = '0';  // gid של הכרטיסייה AuthorizedUsers
+    const CSV_URL        =
+      `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${GID}`;
+    const LOGIN_PAGE     = 'login.html';
 
-    // משטח בדיקה
+    // 2b. בדיקה מיידית
     (function(){
       const uuid = localStorage.getItem("uuid");
       if (!uuid) {
-        // אין UUID, חזרה להרשמה
+        // אין UUID → מפנים מיד לעמוד ההרשמה/כניסה
         return window.location.replace(LOGIN_PAGE);
       }
 
-      // שולפים את רשימת המשתמשים המאושרים
-      Tabletop.init({
-        key: SPREADSHEET_PUBURL,
-        simpleSheet: false,
-        callback: data => {
-          const rows = (data[SHEET_NAME]||{elements:[]}).elements;
-          // מספיק לבדוק שה־UUID מופיע בכלל (אפשר להוסיף עוד שדות)
+      // 2c. מביאים CSV של AuthorizedUsers
+      fetch(CSV_URL)
+        .then(res => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.text();
+        })
+        .then(text => {
+          const [headerLine, ...lines] = text.trim().split("\n");
+          const headers = headerLine.split(",").map(h => h.trim());
+          const rows = lines.map(line => {
+            const cols = line.split(",").map(c => c.trim());
+            return headers.reduce((o,h,i) => (o[h] = cols[i]||"", o), {});
+          });
+
+          // 2d. בדיקת קיום UUID
           const isAllowed = rows.some(r => r.UUID === uuid);
           if (isAllowed) {
-            // אם מאושר — חושפים את הדף
+            // מאושר → חושפים את הדף
             document.documentElement.style.visibility = 'visible';
           } else {
-            // לא מאושר — מפנים ל-login
+            // לא מאושר → מפנים
             window.location.replace(LOGIN_PAGE);
           }
-        }
-      });
+        })
+        .catch(() => {
+          // בשגיאה בגלישה או בפרסור → מפנים
+          window.location.replace(LOGIN_PAGE);
+        });
     })();
   </script>
   

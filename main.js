@@ -106,7 +106,11 @@ function applyFilters() {
     const yearMatch = !yearFilter || movie["שנת יציאה"] === yearFilter;
     const rating = parseFloat(movie["ציון IMDb"]) || 0;
     const ratingMatch = rating >= ratingFilter;
-    const genreMatch = !genreFilter || movie["ז'אנר"].toLowerCase().includes(genreFilter);
+
+    // ז'אנרים תואמים גם אם רשום קומדיה, הרפתקאות
+    const genresInMovie = (movie["ז'אנר"] || "").split(",").map(g => g.trim().toLowerCase());
+    const genreMatch = !genreFilter || genresInMovie.includes(genreFilter);
+
     const searchMatch = [movie["שם הסרט בעברית"], movie["שם הסרט באנגלית"], movie["במאי"], movie["שחקנים ראשיים"], movie["תיאור קצר"]]
       .some(field => field && field.toLowerCase().includes(searchTerm));
 
@@ -123,10 +127,8 @@ fetch(csvUrl)
     allMovies = result.data.filter(row => row["שם הסרט בעברית"]); // סינון שורות ריקות
     renderMovies(allMovies);
 
-    // יצירת אפשרויות סינון (לפי שנה וג'אנר)
+    // יצירת אפשרויות סינון (שנים)
     const years = [...new Set(allMovies.map(m => m["שנת יציאה"]).filter(Boolean))].sort();
-    const genres = [...new Set(allMovies.map(m => m["ז'אנר"]).filter(Boolean))].sort();
-
     const yearSelect = document.getElementById("yearFilter");
     years.forEach(year => {
       const option = document.createElement("option");
@@ -135,6 +137,17 @@ fetch(csvUrl)
       yearSelect.appendChild(option);
     });
 
+    // יצירת אפשרויות סינון לפי ז'אנר (כולל הפרדת ז'אנרים מרובים)
+    const genreSet = new Set();
+    allMovies.forEach(movie => {
+      if (movie["ז'אנר"]) {
+        movie["ז'אנר"].split(",").forEach(g => {
+          const genre = g.trim();
+          if (genre) genreSet.add(genre);
+        });
+      }
+    });
+    const genres = [...genreSet].sort();
     const genreSelect = document.getElementById("genreFilter");
     genres.forEach(genre => {
       const option = document.createElement("option");
@@ -142,6 +155,5 @@ fetch(csvUrl)
       option.textContent = genre;
       genreSelect.appendChild(option);
     });
-
   })
   .catch(err => console.error("שגיאה בטעינת הנתונים:", err));

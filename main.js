@@ -53,7 +53,6 @@ function createMovieCard(data) {
 
   const contentDiv = document.createElement("div");
   contentDiv.className = "movie-content";
-
   contentDiv.innerHTML = `
     <h5 class="card-title">${hebname}</h5>
     <h6 class="card-subtitle mb-2 text-muted">${engname}</h6>
@@ -100,6 +99,7 @@ function applyFilters() {
   const yearFilter = document.getElementById("yearFilter").value;
   const ratingFilter = parseFloat(document.getElementById("ratingFilter").value) || 0;
   const genreFilter = document.getElementById("genreFilter").value.toLowerCase();
+  const pgFilter = document.getElementById("pgFilter").value.toLowerCase();
   const searchTerm = document.getElementById("searchInput").value.toLowerCase();
 
   const filtered = allMovies.filter(movie => {
@@ -107,14 +107,13 @@ function applyFilters() {
     const rating = parseFloat(movie["ציון IMDb"]) || 0;
     const ratingMatch = rating >= ratingFilter;
 
-    // ז'אנרים תואמים גם אם רשום קומדיה, הרפתקאות
-    const genresInMovie = (movie["ז'אנר"] || "").split(",").map(g => g.trim().toLowerCase());
-    const genreMatch = !genreFilter || genresInMovie.includes(genreFilter);
+    const genreMatch = !genreFilter || (movie["ז'אנר"] || "").toLowerCase().split(",").map(g => g.trim()).includes(genreFilter);
+    const pgMatch = !pgFilter || (movie["סרט לילדים / מבוגרים"] || "").toLowerCase() === pgFilter;
 
     const searchMatch = [movie["שם הסרט בעברית"], movie["שם הסרט באנגלית"], movie["במאי"], movie["שחקנים ראשיים"], movie["תיאור קצר"]]
       .some(field => field && field.toLowerCase().includes(searchTerm));
 
-    return yearMatch && ratingMatch && genreMatch && searchMatch;
+    return yearMatch && ratingMatch && genreMatch && pgMatch && searchMatch;
   });
 
   renderMovies(filtered);
@@ -124,10 +123,10 @@ fetch(csvUrl)
   .then(res => res.text())
   .then(csvData => {
     const result = Papa.parse(csvData, { header: true });
-    allMovies = result.data.filter(row => row["שם הסרט בעברית"]); // סינון שורות ריקות
+    allMovies = result.data.filter(row => row["שם הסרט בעברית"]);
     renderMovies(allMovies);
 
-    // יצירת אפשרויות סינון (שנים)
+    // סינון לפי שנה
     const years = [...new Set(allMovies.map(m => m["שנת יציאה"]).filter(Boolean))].sort();
     const yearSelect = document.getElementById("yearFilter");
     years.forEach(year => {
@@ -137,7 +136,7 @@ fetch(csvUrl)
       yearSelect.appendChild(option);
     });
 
-    // יצירת אפשרויות סינון לפי ז'אנר (כולל הפרדת ז'אנרים מרובים)
+    // סינון לפי ז'אנר (בפיצול מרובים)
     const genreSet = new Set();
     allMovies.forEach(movie => {
       if (movie["ז'אנר"]) {
@@ -154,6 +153,16 @@ fetch(csvUrl)
       option.value = genre;
       option.textContent = genre;
       genreSelect.appendChild(option);
+    });
+
+    // סינון לפי סיווג צפייה
+    const pgValues = [...new Set(allMovies.map(m => m["סרט לילדים / מבוגרים"]).filter(Boolean))].sort();
+    const pgSelect = document.getElementById("pgFilter");
+    pgValues.forEach(pg => {
+      const option = document.createElement("option");
+      option.value = pg;
+      option.textContent = pg;
+      pgSelect.appendChild(option);
     });
   })
   .catch(err => console.error("שגיאה בטעינת הנתונים:", err));

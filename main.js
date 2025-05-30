@@ -1,4 +1,8 @@
-// קישורים ל־Google Sheets (CSV)
+// main.js
+
+// ────────────────────────────────────────────────────────────────────────────
+// 0) Constants & State
+// ────────────────────────────────────────────────────────────────────────────
 const moviesCsvUrl   = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRy3QmBmzq23a0pVmV7GBNa8ryYiKiIes8VclVTfCiwqPRITOxxSrZt8dT9aTCkpQ/pub?output=csv";
 const seriesListId   = "1yYRTUq6iRh0dfhFFFpVJiR351jXS2Ll-9VCjsLrTW0Y";
 const seriesListName = "טבלת סדרות";
@@ -8,57 +12,54 @@ let allMovies   = [];
 let allSeries   = [];
 let isSeriesMode = false;
 
-// ────────────────────────────────────────────────────────────────────────────
-// 1) יצירת כרטיס סרט
-// ────────────────────────────────────────────────────────────────────────────
-// main.js
+// Fallback image URL
+const fallbackImage = "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה_לא_טעונה.png";
 
-// עדכון createMovieCard: מוסיף event listeners ל-show-info
+// ────────────────────────────────────────────────────────────────────────────
+// 1) createMovieCard: סרט עם show-info listeners
+// ────────────────────────────────────────────────────────────────────────────
 function createMovieCard(data) {
-  const hebname    = data["שם הסרט בעברית"] || "";
-  const engname    = data["שם הסרט באנגלית"] || "";
-  const director   = data["במאי"] || "";
-  const mainactors = data["שחקנים ראשיים"] || "";
-  const producer   = data["מפיק"] || "";
-  const writer     = data["תסריטאי"] || "";
-  const score      = data["ציון IMDb"] || "";
-  const pg         = data["סרט לילדים / מבוגרים"] || "";
-  const imdblink   = data["קישור ל-IMDb"] || "";
-  const genre      = data["ז'אנר"] || "";
-  const awards     = data["פרסים והישגים בולטים"] || "";
-  const viewing    = data["קישור לדרייב"] || "";
-  const year       = data["שנת יציאה"] || "";
-  const desc       = data["תיאור קצר"] || "";
-  const pic        = data["קישור לתמונה"] 
-                     || "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה_לא_טעונה.png";
-  const trailer    = data["טריילר"] || "";
+  const hebname    = data["שם הסרט בעברית"]       || "";
+  const engname    = data["שם הסרט באנגלית"]      || "";
+  const director   = data["במאי"]                  || "";
+  const mainactors = data["שחקנים ראשיים"]         || "";
+  const producer   = data["מפיק"]                  || "";
+  const writer     = data["תסריטאי"]               || "";
+  const score      = data["ציון IMDb"]             || "";
+  const pg         = data["סרט לילדים / מבוגרים"]   || "";
+  const imdblink   = data["קישור ל-IMDb"]           || "";
+  const genre      = data["ז'אנר"]                  || "";
+  const awards     = data["פרסים והישגים בולטים"]   || "";
+  const viewing    = data["קישור לדרייב"]           || "";
+  const year       = data["שנת יציאה"]             || "";
+  const desc       = data["תיאור קצר"]             || "";
+  const pic        = data["קישור לתמונה"]           || fallbackImage;
+  const trailer    = data["טריילר"]                || "";
 
+  // Card container
   const card = document.createElement("div");
   card.className = "col-12 col-md-6 mb-4";
 
+  // Inner card
   const inner = document.createElement("div");
   inner.className = "card h-100 shadow-sm movie-card";
 
-  // mouseenter/mouseleave במקום CSS:hover
-  inner.addEventListener("mouseenter", () => {
-    inner.classList.add("show-info");
-  });
-  inner.addEventListener("mouseleave", () => {
-    inner.classList.remove("show-info");
-  });
+  // show-info on hover via JS
+  inner.addEventListener("mouseenter", () => inner.classList.add("show-info"));
+  inner.addEventListener("mouseleave", () => inner.classList.remove("show-info"));
 
-  // Trailer container
+  // Trailer wrapper
   const trailerWr = document.createElement("div");
   trailerWr.className = "trailer-container";
 
-  // Image
+  // Image element
   const img = document.createElement("img");
-  img.src = pic; img.alt = hebname;
+  img.src = pic;
+  img.alt = hebname;
   img.className = "movie-image";
-  img.onerror = () => img.src = 
-    "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה_לא_טעונה.png";
+  img.onerror = () => { img.src = fallbackImage; };
 
-  // Content + extra-info
+  // Content (text + extra-info)
   const content = document.createElement("div");
   content.className = "movie-content";
   content.innerHTML = `
@@ -83,6 +84,7 @@ function createMovieCard(data) {
     </div>
   `;
 
+  // Assemble left & right sides
   const leftCol = document.createElement("div");
   leftCol.className = "left-side";
   leftCol.append(trailerWr, img);
@@ -96,13 +98,14 @@ function createMovieCard(data) {
   return card;
 }
 
-// עדכון createSeriesCard: מוסיף event listeners ל-show-info
+// ────────────────────────────────────────────────────────────────────────────
+// 2) createSeriesCard: סדרה עם show-info listeners
+// ────────────────────────────────────────────────────────────────────────────
 function createSeriesCard(s) {
-  const titleHe = s["שם הסדרה בעברית"];
+  const titleHe = s["שם הסדרה בעברית"] || "";
   const titleEn = s["שם הסדרה באנגלית"] || "";
-  const desc    = s["תיאור קצר"] || "";
-  const pic     = s["תמונה"] 
-                   || "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה_לא_טעונה.png";
+  const desc    = s["תיאור קצר"]           || "";
+  const pic     = s["תמונה"]               || fallbackImage;
 
   const card = document.createElement("div");
   card.className = "col-12 col-md-6 mb-4";
@@ -110,20 +113,18 @@ function createSeriesCard(s) {
   const inner = document.createElement("div");
   inner.className = "card h-100 shadow-sm movie-card";
 
-  // mouseenter/mouseleave במקום CSS:hover
-  inner.addEventListener("mouseenter", () => {
-    inner.classList.add("show-info");
-  });
-  inner.addEventListener("mouseleave", () => {
-    inner.classList.remove("show-info");
-  });
+  // show-info on hover via JS
+  inner.addEventListener("mouseenter", () => inner.classList.add("show-info"));
+  inner.addEventListener("mouseleave", () => inner.classList.remove("show-info"));
 
+  // Series image
   const img = document.createElement("img");
-  img.src = pic; img.alt = titleHe;
+  img.src = pic;
+  img.alt = titleHe;
   img.className = "card-img-top movie-image";
-  img.onerror = () => img.src = 
-    "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה_לא_טעונה.png";
+  img.onerror = () => { img.src = fallbackImage; };
 
+  // Body
   const bd = document.createElement("div");
   bd.className = "card-body";
   bd.innerHTML = `
@@ -144,9 +145,8 @@ function createSeriesCard(s) {
   return card;
 }
 
-
 // ────────────────────────────────────────────────────────────────────────────
-// 2) רינדור סרטים
+// 3) renderMovies & renderSeriesCards
 // ────────────────────────────────────────────────────────────────────────────
 function renderMovies(list) {
   const container = document.getElementById("moviecontainer");
@@ -154,24 +154,48 @@ function renderMovies(list) {
   list.forEach(m => container.append(createMovieCard(m)));
 }
 
+function renderSeriesCards(list) {
+  const container = document.getElementById("moviecontainer");
+  container.innerHTML = "";
+
+  // Back button to series list
+  const back = document.createElement("button");
+  back.className = "btn btn-outline-secondary mb-3";
+  back.textContent = "🔙 חזרה לסדרות";
+  back.onclick = loadSeries;
+  container.append(back);
+
+  list.forEach(s => container.append(createSeriesCard(s)));
+}
+
 // ────────────────────────────────────────────────────────────────────────────
-// 3) סינון סרטים
+// 4) applyFilters (for movies only)
 // ────────────────────────────────────────────────────────────────────────────
 function applyFilters() {
-  if (isSeriesMode) return;
-  const y = document.getElementById("yearFilter").value;
-  const r = parseFloat(document.getElementById("ratingFilter").value) || 0;
-  const g = document.getElementById("genreFilter").value.toLowerCase();
-  const p = document.getElementById("pgFilter").value.toLowerCase();
-  const q = document.getElementById("searchInput").value.toLowerCase();
+  if (isSeriesMode) return; // no filters in series mode
+
+  const yearFilter   = document.getElementById("yearFilter").value;
+  const ratingFilter = parseFloat(document.getElementById("ratingFilter").value) || 0;
+  const genreFilter  = document.getElementById("genreFilter").value.toLowerCase();
+  const pgFilter     = document.getElementById("pgFilter").value.toLowerCase();
+  const searchTerm   = document.getElementById("searchInput").value.toLowerCase();
 
   const filtered = allMovies.filter(m => {
-    const ym = !y || m["שנת יציאה"] === y;
-    const rm = (parseFloat(m["ציון IMDb"])||0) >= r;
-    const gm = !g || (m["ז'אנר"]||"").toLowerCase().split(",").map(x=>x.trim()).includes(g);
-    const pm = !p || (m["סרט לילדים / מבוגרים"]||"").toLowerCase() === p;
-    const sm = [m["שם הסרט בעברית"], m["שם הסרט באנגלית"], m["במאי"], m["שחקנים ראשיים"], m["תיאור קצר"]]
-                 .some(f => f && f.toLowerCase().includes(q));
+    const ym = !yearFilter || m["שנת יציאה"] === yearFilter;
+    const rm = (parseFloat(m["ציון IMDb"])||0) >= ratingFilter;
+    const gm = !genreFilter || (m["ז'אנר"]||"").toLowerCase()
+                                .split(",").map(x=>x.trim())
+                                .includes(genreFilter);
+    const pm = !pgFilter || (m["סרט לילדים / מבוגרים"]||"")
+                                .toLowerCase() === pgFilter;
+    const sm = [
+      m["שם הסרט בעברית"],
+      m["שם הסרט באנגלית"],
+      m["במאי"],
+      m["שחקנים ראשיים"],
+      m["תיאור קצר"]
+    ].some(f => f && f.toLowerCase().includes(searchTerm));
+
     return ym && rm && gm && pm && sm;
   });
 
@@ -179,121 +203,82 @@ function applyFilters() {
 }
 
 // ────────────────────────────────────────────────────────────────────────────
-// 4) טעינת סרטים
+// 5) loadMovies: fetch & init filters
 // ────────────────────────────────────────────────────────────────────────────
 function loadMovies() {
   fetch(moviesCsvUrl)
-    .then(r => r.text())
-    .then(txt => {
-      allMovies = Papa.parse(txt, { header: true }).data
+    .then(res => res.text())
+    .then(csv => {
+      allMovies = Papa.parse(csv, { header: true }).data
                      .filter(r => r["שם הסרט בעברית"]);
       renderMovies(allMovies);
-      // yearFilter
+
+      // build yearFilter options
       const years = [...new Set(allMovies.map(m=>m["שנת יציאה"]).filter(Boolean))].sort();
-      years.forEach(y=>{
-        const o = document.createElement("option"); o.value=o.textContent=y;
-        document.getElementById("yearFilter").append(o);
+      const ySelect = document.getElementById("yearFilter");
+      years.forEach(y => {
+        const opt = document.createElement("option");
+        opt.value = y;
+        opt.textContent = y;
+        ySelect.append(opt);
       });
-      // genreFilter
+
+      // build genreFilter options (split multi-genres)
       const gset = new Set();
-      allMovies.forEach(m=>(m["ז'אנר"]||"").split(",").forEach(x=>x.trim()&&gset.add(x.trim())));
-      [...gset].sort().forEach(x=>{
-        const o = document.createElement("option"); o.value=o.textContent=x;
-        document.getElementById("genreFilter").append(o);
-      });
-      // pgFilter
-      [...new Set(allMovies.map(m=>m["סרט לילדים / מבוגרים"]).filter(Boolean))].sort()
-        .forEach(x=>{
-          const o = document.createElement("option"); o.value=o.textContent=x;
-          document.getElementById("pgFilter").append(o);
+      allMovies.forEach(m => {
+        (m["ז'אנר"]||"").split(",").forEach(x=> {
+          const g = x.trim();
+          if(g) gset.add(g);
         });
+      });
+      const gSelect = document.getElementById("genreFilter");
+      [...gset].sort().forEach(g => {
+        const opt = document.createElement("option");
+        opt.value = g;
+        opt.textContent = g;
+        gSelect.append(opt);
+      });
+
+      // build pgFilter options
+      const pgSet = new Set(allMovies.map(m=>m["סרט לילדים / מבוגרים"]).filter(Boolean));
+      const pgSelect = document.getElementById("pgFilter");
+      [...pgSet].sort().forEach(p => {
+        const opt = document.createElement("option");
+        opt.value = p;
+        opt.textContent = p;
+        pgSelect.append(opt);
+      });
     })
-    .catch(e=>console.error("שגיאת loadMovies:", e));
+    .catch(err => console.error("שגיאת loadMovies:", err));
 }
 
 // ────────────────────────────────────────────────────────────────────────────
-// 5) יצירת כרטיס סדרה
-// ────────────────────────────────────────────────────────────────────────────
-function createSeriesCard(s) {
-  const titleHe = s["שם הסדרה בעברית"];
-  const titleEn = s["שם הסדרה באנגלית"] || "";
-  const desc    = s["תיאור קצר"] || "";
-  const pic     = s["תמונה"] || "";
-
-  const card = document.createElement("div");
-  card.className = "col-12 col-md-6 mb-4";
-
-  const inner = document.createElement("div");
-  inner.className = "card h-100 shadow-sm movie-card";
-  inner.style.cursor = "pointer";
-
-  const img = document.createElement("img");
-  img.src = pic; img.alt = titleHe;
-  img.className = "card-img-top movie-image";
-  img.onerror = () => img.src = "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה_לא_טעונה.png";
-
-  const bd = document.createElement("div");
-  bd.className = "card-body";
-  bd.innerHTML = `
-    <h5 class="card-title">${titleHe}</h5>
-    <h6 class="card-subtitle mb-2 text-muted">${titleEn}</h6>
-    <p class="card-text">${desc}</p>
-    <div class="extra-info">
-      <p><strong>שם הסדרה:</strong> ${titleHe}<br>
-         <strong>תיאור:</strong> ${desc}</p>
-      <button class="btn btn-outline-primary" onclick="loadEpisodes('${titleHe}')">
-        📂 ראה עונות ופרקים
-      </button>
-    </div>
-  `;
-
-  inner.append(img, bd);
-  card.append(inner);
-  return card;
-}
-
-// ────────────────────────────────────────────────────────────────────────────
-// 6) רינדור סדרות
-// ────────────────────────────────────────────────────────────────────────────
-function renderSeriesCards(list) {
-  const container = document.getElementById("moviecontainer");
-  container.innerHTML = "";
-  const back = document.createElement("button");
-  back.className = "btn btn-outline-secondary mb-3";
-  back.textContent = "🔙 חזרה לסדרות";
-  back.onclick = loadSeries;
-  container.append(back);
-  list.forEach(s => container.append(createSeriesCard(s)));
-}
-
-// ────────────────────────────────────────────────────────────────────────────
-// 7) טעינת טבלת סדרות
+// 6) loadSeries: fetch series list
 // ────────────────────────────────────────────────────────────────────────────
 function loadSeries() {
   isSeriesMode = true;
+  document.body.classList.add("series-mode");
   document.querySelector("h1").textContent = "📺 הסדרות שלנו";
   document.getElementById("toggleViewBtn").textContent = "🎬 חזרה לסרטים";
   document.querySelector(".filter-bar").style.display = "none";
 
-  const container = document.getElementById("moviecontainer");
-  container.innerHTML = `<div class="text-center py-5">🔄 טוען סדרות...</div>`;
-
   const url = `https://docs.google.com/spreadsheets/d/${seriesListId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(seriesListName)}`;
   fetch(url)
-    .then(r => r.text())
-    .then(txt => {
-      allSeries = Papa.parse(txt, { header: true }).data
-        .filter(r => r["שם הסדרה בעברית"]);
+    .then(res => res.text())
+    .then(csv => {
+      allSeries = Papa.parse(csv, { header: true }).data
+                     .filter(r => r["שם הסדרה בעברית"]);
       renderSeriesCards(allSeries);
     })
-    .catch(e => {
+    .catch(err => {
+      const container = document.getElementById("moviecontainer");
       container.innerHTML = `<div class="text-danger text-center py-5">❌ שגיאה בטעינת סדרות</div>`;
-      console.error(e);
+      console.error(err);
     });
 }
 
 // ────────────────────────────────────────────────────────────────────────────
-// 8) טעינת פרקים
+// 7) loadEpisodes: fetch episodes for a series
 // ────────────────────────────────────────────────────────────────────────────
 function loadEpisodes(seriesName) {
   const container = document.getElementById("moviecontainer");
@@ -301,27 +286,29 @@ function loadEpisodes(seriesName) {
 
   const url = `https://docs.google.com/spreadsheets/d/${episodesId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(seriesName)}`;
   fetch(url)
-    .then(r => r.text())
-    .then(txt => {
-      const eps = Papa.parse(txt, { header: true }).data.filter(ep => ep["שם הפרק"]);
+    .then(res => res.text())
+    .then(csv => {
+      const eps = Papa.parse(csv, { header: true }).data
+                     .filter(ep => ep["שם הפרק"]);
 
+      // group by season (numeric sort)
       const grouped = {};
       eps.forEach(ep => {
-        const s = ep["עונה"];
+        const s = parseInt(ep["עונה"], 10);
         if (!grouped[s]) grouped[s] = [];
         grouped[s].push(ep);
       });
 
+      // back button to series list
       container.innerHTML = "";
-      const backSeries = document.createElement("button");
-      backSeries.className = "btn btn-outline-secondary mb-3";
-      backSeries.textContent = "🔙 חזרה לסדרות";
-      backSeries.onclick = () => renderSeriesCards(allSeries);
-      container.append(backSeries);
+      const back = document.createElement("button");
+      back.className = "btn btn-outline-secondary mb-3";
+      back.textContent = "🔙 חזרה לסדרות";
+      back.onclick = loadSeries;
+      container.append(back);
 
-      Object.keys(grouped)
-        .map(n => parseInt(n))
-        .sort((a, b) => a - b)
+      // season buttons
+      Object.keys(grouped).map(n=>parseInt(n,10)).sort((a,b)=>a-b)
         .forEach(seasonNum => {
           const btn = document.createElement("button");
           btn.className = "btn btn-info m-2";
@@ -330,14 +317,15 @@ function loadEpisodes(seriesName) {
           container.append(btn);
         });
     })
-    .catch(e => {
+    .catch(err => {
+      const container = document.getElementById("moviecontainer");
       container.innerHTML = `<div class="text-danger text-center py-5">❌ שגיאה בטעינת הפרקים</div>`;
-      console.error(e);
+      console.error(err);
     });
 }
 
 // ────────────────────────────────────────────────────────────────────────────
-// 9) הצגת פרקים בעונה
+// 8) showEpisodesInSeason: render episodes in a season
 // ────────────────────────────────────────────────────────────────────────────
 function showEpisodesInSeason(seriesName, episodesList, seasonNum) {
   const container = document.getElementById("moviecontainer");
@@ -352,15 +340,16 @@ function showEpisodesInSeason(seriesName, episodesList, seasonNum) {
   episodesList.forEach(ep => {
     const card = document.createElement("div");
     card.className = "card mb-3";
+
     const row = document.createElement("div");
     row.className = "row g-0";
 
     const colImg = document.createElement("div");
     colImg.className = "col-md-4";
     const img = document.createElement("img");
-    img.src = ep["תמונה"] || "";
+    img.src = ep["תמונה"] || fallbackImage;
     img.className = "img-fluid rounded-start";
-    img.onerror = () => img.src = "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה_לא_טעונה.png";
+    img.onerror = () => { img.src = fallbackImage; };
     colImg.append(img);
 
     const colBody = document.createElement("div");
@@ -382,7 +371,7 @@ function showEpisodesInSeason(seriesName, episodesList, seasonNum) {
 }
 
 // ────────────────────────────────────────────────────────────────────────────
-// 10) toggle ושגרה ראשונית
+// 9) Toggle button & initial load
 // ────────────────────────────────────────────────────────────────────────────
 document.getElementById("toggleViewBtn").addEventListener("click", () => {
   isSeriesMode = !isSeriesMode;
@@ -393,17 +382,17 @@ document.getElementById("toggleViewBtn").addEventListener("click", () => {
   const filter = document.querySelector(".filter-bar");
 
   if (isSeriesMode) {
-    title.textContent      = "📺 הסדרות שלנו";
-    btn.textContent        = "🎬 חזרה לסרטים";
-    filter.style.display   = "none";
+    title.textContent    = "📺 הסדרות שלנו";
+    btn.textContent      = "🎬 חזרה לסרטים";
+    filter.style.display = "none";
     loadSeries();
   } else {
-    title.textContent      = "🎬 הסרטים שלנו";
-    btn.textContent        = "📺 מעבר לתצוגת סדרות";
-    filter.style.display   = "block";
+    title.textContent    = "🎬 הסרטים שלנו";
+    btn.textContent      = "📺 מעבר לתצוגת סדרות";
+    filter.style.display = "block";
     loadMovies();
   }
 });
 
-
+// initial load: fetch movies
 document.addEventListener("DOMContentLoaded", loadMovies);

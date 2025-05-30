@@ -97,7 +97,7 @@ function createSeriesCard(s) {
   const heb   = s["שם הסדרה בעברית"]       || "";
   const eng   = s["שם הסדרה באנגלית"]      || "";
   const desc  = s["תיאור קצר"]             || "";
-  const pic   = s["תמונה"]                 || fallbackImage;
+  const pic   = s["קישור לתמונה"]                 || fallbackImage;
 
   const card = document.createElement("div");
   card.className = "col-12 col-md-6 mb-4";

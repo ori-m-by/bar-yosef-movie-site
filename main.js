@@ -11,6 +11,9 @@ let isSeriesMode = false;
 // ────────────────────────────────────────────────────────────────────────────
 // 1) יצירת כרטיס סרט
 // ────────────────────────────────────────────────────────────────────────────
+// main.js
+
+// עדכון createMovieCard: מוסיף event listeners ל-show-info
 function createMovieCard(data) {
   const hebname    = data["שם הסרט בעברית"] || "";
   const engname    = data["שם הסרט באנגלית"] || "";
@@ -26,7 +29,8 @@ function createMovieCard(data) {
   const viewing    = data["קישור לדרייב"] || "";
   const year       = data["שנת יציאה"] || "";
   const desc       = data["תיאור קצר"] || "";
-  const pic        = data["קישור לתמונה"] || "default-image.jpg";
+  const pic        = data["קישור לתמונה"] 
+                     || "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה_לא_טעונה.png";
   const trailer    = data["טריילר"] || "";
 
   const card = document.createElement("div");
@@ -34,28 +38,27 @@ function createMovieCard(data) {
 
   const inner = document.createElement("div");
   inner.className = "card h-100 shadow-sm movie-card";
-  inner.style.transition = "transform 0.3s ease";
-  inner.style.transformOrigin = "center";
 
-  // Trailer hover
+  // mouseenter/mouseleave במקום CSS:hover
+  inner.addEventListener("mouseenter", () => {
+    inner.classList.add("show-info");
+  });
+  inner.addEventListener("mouseleave", () => {
+    inner.classList.remove("show-info");
+  });
+
+  // Trailer container
   const trailerWr = document.createElement("div");
   trailerWr.className = "trailer-container";
-  inner.addEventListener("mouseenter", () => {
-    inner.style.transform = "scale(1.05)";
-    if (trailer && !trailerWr.innerHTML) {
-      const url = trailer.replace("watch?v=", "embed/") + "?autoplay=1&mute=1&rel=0&controls=1";
-      trailerWr.innerHTML = `<iframe width="100%" height="100%" src="${url}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-    }
-  });
-  inner.addEventListener("mouseleave", () => inner.style.transform = "scale(1)");
 
   // Image
   const img = document.createElement("img");
   img.src = pic; img.alt = hebname;
   img.className = "movie-image";
-  img.onerror = () => img.src = "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה_לא_טעונה.png";
+  img.onerror = () => img.src = 
+    "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה_לא_טעונה.png";
 
-  // Content
+  // Content + extra-info
   const content = document.createElement("div");
   content.className = "movie-content";
   content.innerHTML = `
@@ -71,8 +74,12 @@ function createMovieCard(data) {
          <strong>IMDB:</strong> ${score}<br>
          <strong>פרסים:</strong> ${awards}<br>
          <strong>קהל יעד:</strong> ${pg}</p>
-      ${viewing.startsWith("http") ? `<a href="${viewing}" target="_blank" class="btn btn-primary"> ▶️ צפייה </a>` : ""}
-      ${imdblink.startsWith("http") ? `<a href="${imdblink}" target="_blank" class="btn btn-secondary ms-2">📺 IMDb</a>` : ""}
+      ${viewing.startsWith("http") 
+        ? `<a href="${viewing}" target="_blank" class="btn btn-primary"> ▶️ צפייה </a>` 
+        : ""}
+      ${imdblink.startsWith("http") 
+        ? `<a href="${imdblink}" target="_blank" class="btn btn-secondary ms-2">📺 IMDb</a>` 
+        : ""}
     </div>
   `;
 
@@ -88,6 +95,55 @@ function createMovieCard(data) {
   card.append(inner);
   return card;
 }
+
+// עדכון createSeriesCard: מוסיף event listeners ל-show-info
+function createSeriesCard(s) {
+  const titleHe = s["שם הסדרה בעברית"];
+  const titleEn = s["שם הסדרה באנגלית"] || "";
+  const desc    = s["תיאור קצר"] || "";
+  const pic     = s["תמונה"] 
+                   || "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה_לא_טעונה.png";
+
+  const card = document.createElement("div");
+  card.className = "col-12 col-md-6 mb-4";
+
+  const inner = document.createElement("div");
+  inner.className = "card h-100 shadow-sm movie-card";
+
+  // mouseenter/mouseleave במקום CSS:hover
+  inner.addEventListener("mouseenter", () => {
+    inner.classList.add("show-info");
+  });
+  inner.addEventListener("mouseleave", () => {
+    inner.classList.remove("show-info");
+  });
+
+  const img = document.createElement("img");
+  img.src = pic; img.alt = titleHe;
+  img.className = "card-img-top movie-image";
+  img.onerror = () => img.src = 
+    "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה_לא_טעונה.png";
+
+  const bd = document.createElement("div");
+  bd.className = "card-body";
+  bd.innerHTML = `
+    <h5 class="card-title">${titleHe}</h5>
+    <h6 class="card-subtitle mb-2 text-muted">${titleEn}</h6>
+    <p class="card-text">${desc}</p>
+    <div class="extra-info">
+      <p><strong>שם הסדרה:</strong> ${titleHe}<br>
+         <strong>תיאור:</strong> ${desc}</p>
+      <button class="btn btn-outline-primary" onclick="loadEpisodes('${titleHe}')">
+        📂 ראה עונות ופרקים
+      </button>
+    </div>
+  `;
+
+  inner.append(img, bd);
+  card.append(inner);
+  return card;
+}
+
 
 // ────────────────────────────────────────────────────────────────────────────
 // 2) רינדור סרטים

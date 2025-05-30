@@ -64,13 +64,13 @@
     position: relative;
     transition: transform 0.3s ease;
   }
-  .movie-card:hover {
-    z-index: 5;
+  /* scale בסרטים בלבד */
+  body:not(.series-mode) .movie-card:hover {
+    transform: scale(1.05);
   }
 
-  /* תמונה של סרט וטריילר */
+  /* תמונות (סרט וסדרה) */
   .movie-card .left-side img,
-  /* תמונה של סדרה */
   .movie-card .card-img-top {
     width: 100%;
     height: auto;
@@ -85,16 +85,19 @@
     flex-direction: column;
     align-items: center;
   }
+
+  /* הטריילר קבוע במרחב, אבל מוסתר */
   .trailer-container {
     width: 100%;
     height: 200px;
     margin-bottom: 10px;
     border-radius: 10px;
     overflow: hidden;
-    display: none;
+    visibility: hidden;
   }
-  .movie-card:hover .trailer-container {
-    display: block;
+  /* ייחשף רק כשיש show-info ובתצוגת סרטים */
+  .movie-card.show-info:not(.series-mode) .trailer-container {
+    visibility: visible;
   }
 
   .movie-content {
@@ -102,10 +105,10 @@
     padding: 10px 15px;
   }
 
-  /* —— כעת extra-info כ-overlay שקוף עד ל-hover —— */
+  /* ה־extra-info כ־overlay שקוף עד ש־show-info */
   .movie-card .extra-info {
     position: absolute;
-    inset: 0;                       /* top:0; right:0; bottom:0; left:0; */
+    inset: 0;       /* top:0; right:0; bottom:0; left:0; */
     background: rgba(255,255,255,0.95);
     padding: 20px;
     box-sizing: border-box;
@@ -115,27 +118,25 @@
     overflow-y: auto;
     z-index: 10;
   }
-  .movie-card:hover .extra-info {
+  /* נחשף כשיש show-info */
+  .movie-card.show-info .extra-info {
     opacity: 1;
     pointer-events: auto;
   }
 
-  .filter-bar {
-    margin-bottom: 30px;
+  /* בתצוגת סדרות – אין scale, אין טריילר */
+  body.series-mode .movie-card {
+    transform: none !important;
   }
-  .form-select,
-  .form-control {
+  body.series-mode .movie-card .trailer-container {
+    visibility: hidden !important;
+  }
+
+  .filter-bar { margin-bottom: 30px; }
+  .form-select, .form-control {
     max-width: 200px;
     display: inline-block;
     margin-left: 10px;
-  }
-
-  /* מבטל scale וטריילר בתצוגת סדרות */
-  body.series-mode .movie-card:hover {
-    transform: none !important;
-  }
-  body.series-mode .movie-card:hover .trailer-container {
-    display: none !important;
   }
 </style>
 

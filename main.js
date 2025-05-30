@@ -197,18 +197,26 @@ function showEpisodesInSeason(seriesName, episodesList, seasonNum) {
 // ────────────────────────────────────────────────────────────────────────────
 // לחצן toggle וסגירת טעינת סרטים/סדרות
 // ────────────────────────────────────────────────────────────────────────────
-document.getElementById("toggleViewBtn").addEventListener("click", () => {
-  isSeriesMode = !isSeriesMode;
-  const btn = document.getElementById("toggleViewBtn");
-  const title = document.querySelector("h1");
-  if (isSeriesMode) {
-    loadSeries();
-  } else {
-    title.textContent = "🎬 הסרטים שלנו";
-    btn.textContent = "📺 מעבר לתצוגת סדרות";
-    renderMovies(allMovies);
-  }
-});
+ document.getElementById("toggleViewBtn").addEventListener("click", () => {
+   isSeriesMode = !isSeriesMode;
+   const btn    = document.getElementById("toggleViewBtn");
+   const title  = document.querySelector("h1");
+   const filter = document.querySelector(".filter-bar");
+
+   if (isSeriesMode) {
+     // לעבור לתצוגת סדרות
+     title.textContent      = "📺 הסדרות שלנו";
+     btn.textContent        = "🎬 חזרה לסרטים";
+     filter.style.display   = "none";   // מסתיר את סרגל הסינון של הסרטים
+     loadSeries();
+   } else {
+     // לחזור לתצוגת סרטים
+     title.textContent      = "🎬 הסרטים שלנו";
+     btn.textContent        = "📺 מעבר לתצוגת סדרות";
+     filter.style.display   = "block";  // מראה שוב את סרגל הסינון
+     loadMovies();                     // טוען מחדש סרטים + סינונים
+   }
+ });
 
 // ────────────────────────────────────────────────────────────────────────────
 // טעינת סרטים בעת הטעינה הראשונית

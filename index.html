@@ -58,14 +58,27 @@
   </script>
   
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
- <style>
+<style>
+  /* הכרטיס עצמו – relative כדי שה־extra-info יוכל להיצמד אליו */
   .movie-card {
     position: relative;
-    overflow: hidden;
+    /* שימו לב: לא שומרים על overflow:hidden */
     transition: transform 0.3s ease;
   }
+
   .movie-card:hover {
     z-index: 5;
+  }
+
+  /* תמונה של סרט */
+  .movie-card .left-side img,
+  /* תמונה של סדרה */
+  .movie-card .card-img-top {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
   }
 
   .left-side {
@@ -87,27 +100,21 @@
     display: block;
   }
 
-  .movie-image {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-    border-radius: 8px;
-  }
-
   .movie-content {
     width: 60%;
     padding: 10px 15px;
   }
 
-  /* פה התיקון: extra-info כ-overlay */
+  /* ה-overlay שאינו דוחף כלום */
   .movie-card .extra-info {
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(255, 255, 255, 0.95);
+    inset: 0;         /* top:0; right:0; bottom:0; left:0 */
+    background: rgba(255,255,255,0.95);
     padding: 20px;
     display: none;
     overflow-y: auto;
     z-index: 10;
+    box-sizing: border-box;
   }
   .movie-card:hover .extra-info {
     display: block;
@@ -116,7 +123,6 @@
   .filter-bar {
     margin-bottom: 30px;
   }
-
   .form-select,
   .form-control {
     max-width: 200px;
@@ -124,6 +130,7 @@
     margin-left: 10px;
   }
 </style>
+
 
 </head>
 <body class="bg-light">

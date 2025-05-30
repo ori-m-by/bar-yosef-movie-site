@@ -129,6 +129,14 @@
     display: inline-block;
     margin-left: 10px;
   }
+  /* אלה חלקים שכדאי להוסיף מיד אחרי ההגדרות הקיימות */
+body.series-mode .movie-card:hover {
+  transform: none !important;      /* לא מגדילים בסדרות */
+}
+body.series-mode .movie-card:hover .trailer-container {
+  display: none !important;        /* לא מציגים טריילר בסדרות */
+}
+
 </style>
 
 

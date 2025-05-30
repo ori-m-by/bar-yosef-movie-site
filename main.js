@@ -330,6 +330,8 @@ function showEpisodesInSeason(seriesName, episodesList, seasonNum) {
 // ────────────────────────────────────────────────────────────────────────────
 document.getElementById("toggleViewBtn").addEventListener("click", () => {
   isSeriesMode = !isSeriesMode;
+  document.body.classList.toggle("series-mode", isSeriesMode);
+
   const btn    = document.getElementById("toggleViewBtn");
   const title  = document.querySelector("h1");
   const filter = document.querySelector(".filter-bar");
@@ -346,5 +348,6 @@ document.getElementById("toggleViewBtn").addEventListener("click", () => {
     loadMovies();
   }
 });
+
 
 document.addEventListener("DOMContentLoaded", loadMovies);

@@ -19,7 +19,8 @@ const fallbackImage = "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movi
 // ────────────────────────────────────────────────────────────────────────────
 // main.js
 
-// main.jsfunction createMovieCard(data) {
+// main.js
+function createMovieCard(data) {
   // 1) קלט
   const heb    = data["שם הסרט בעברית"]       || "";
   const eng    = data["שם הסרט באנגלית"]      || "";

@@ -17,10 +17,8 @@ const fallbackImage = "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movi
 // ────────────────────────────────────────────────────────────────────────────
 // 1) createMovieCard
 // ────────────────────────────────────────────────────────────────────────────
-// main.js
-
-function createMovieCard(data) {
-  // 1) קלט
+// main.jsfunction createMovieCard(data) {
+  // 1) נתונים
   const heb    = data["שם הסרט בעברית"]     || "";
   const eng    = data["שם הסרט באנגלית"]    || "";
   const pic    = data["קישור לתמונה"]        || fallbackImage;
@@ -37,25 +35,35 @@ function createMovieCard(data) {
   const viewL  = (data["קישור לדרייב"]    || "").trim();
   const imdbL  = (data["קישור ל-IMDb"]   || "").trim();
 
-  // 2) קונטיינרים
-  const card  = document.createElement("div");
+  // 2) קליינרים
+  const card = document.createElement("div");
   card.className = "col-12 col-md-6 mb-4";
+
   const inner = document.createElement("div");
   inner.className = "card shadow-sm movie-card";
   inner.addEventListener("mouseenter", () => inner.classList.add("show-info"));
   inner.addEventListener("mouseleave", () => inner.classList.remove("show-info"));
 
-  // 3) עמודת טקסט
+  // 3) עמודת טקסט + תמונה שנייה מתחת לטקסט
   const textCol = document.createElement("div");
   textCol.className = "movie-content";
-
-  // בונים את ה־HTML כ־template literal אחד, בלי backticks פנימיים
-  let html = `
+  textCol.innerHTML = `
     <h5 class="card-title">${heb}</h5>
     <h6 class="card-subtitle mb-2 text-muted">${eng}</h6>
     <p><strong>שנה:</strong> ${year}<br><strong>ז'אנר:</strong> ${genre}</p>
     <p>${desc}</p>
-    <div class="extra-info">
+  `;
+  // > התמונה השנייה מתחת לטקסט
+  const txtImg = document.createElement("img");
+  txtImg.src = "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה%20לאתר%202.jpg";
+  txtImg.alt = "תמונה לאתר 2";
+  txtImg.className = "text-extra-image";
+  textCol.append(txtImg);
+
+  // > ה־overlay עם הפירוט
+  const extra = document.createElement("div");
+  extra.className = "extra-info";
+  extra.innerHTML = `
       <p><strong>במאי:</strong> ${dir}<br>
          <strong>שחקנים:</strong> ${actors}<br>
          <strong>תסריטאי:</strong> ${writer}<br>
@@ -63,26 +71,16 @@ function createMovieCard(data) {
          <strong>IMDB:</strong> ${score}<br>
          <strong>פרסים:</strong> ${awards}<br>
          <strong>קהל יעד:</strong> ${pg}</p>
+      ${viewL.startsWith("http")
+        ? `<a href="${viewL}" target="_blank" class="btn btn-primary mb-2">▶️ צפייה</a>`
+        : ``}
+      ${imdbL.startsWith("http")
+        ? `<a href="${imdbL}" target="_blank" class="btn btn-secondary mb-2 ms-2">📺 IMDb</a>`
+        : ``}
   `;
+  textCol.append(extra);
 
-  if (viewL.startsWith("http")) {
-    html += `<a href="` + viewL + `" target="_blank" class="btn btn-primary mb-2">▶️ צפייה</a>`;
-  }
-  if (imdbL.startsWith("http")) {
-    html += `<a href="` + imdbL + `" target="_blank" class="btn btn-secondary mb-2 ms-2">📺 IMDb</a>`;
-  }
-
-  html += `
-      <div class="hover-images">
-        <img src="https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה%20לאתר.png" alt="תמונה לאתר">
-        <img src="https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה%20לאתר%202.jpg" alt="תמונה לאתר 2">
-      </div>
-    </div>
-  `;
-
-  textCol.innerHTML = html;
-
-  // 4) עמודת פוסטר + extra poster מתחת
+  // 4) עמודת פוסטר + התמונה הראשונה מתחת לפוסטר
   const imgCol = document.createElement("div");
   imgCol.className = "right-side";
 
@@ -94,12 +92,12 @@ function createMovieCard(data) {
   imgCol.append(img);
 
   const extraPoster = document.createElement("img");
-  extraPoster.src = "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה%20לאתר%202.jpg";
-  extraPoster.alt = "תמונה לאתר 2";
+  extraPoster.src = "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה%20לאתר.png";
+  extraPoster.alt = "תמונה לאתר";
   extraPoster.className = "poster-extra-image";
   imgCol.append(extraPoster);
 
-  // 5) הרכבה
+  // 5) הרכבה סופית
   const row = document.createElement("div");
   row.className = "d-flex";
   row.append(textCol, imgCol);
@@ -108,6 +106,7 @@ function createMovieCard(data) {
   card.append(inner);
   return card;
 }
+
 
 
 

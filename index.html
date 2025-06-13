@@ -58,27 +58,30 @@
   </script>
   
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<!-- styles.css או בתוך <style> ב־index.html --><style>
-  /* … (כל מה שעדיין נשאר מהסגנונות הקודמים) … */
 
-  /* הסתרת overflow כדי שהתמונות לא יברחו */
+  
+  
+  <style>
+  /* ── עיצוב כללי של הכרטיס ───────────────────────────────────────────── */
   .movie-card {
     position: relative;
-    overflow: hidden;
+    overflow: hidden;             /* לפני hover – חותך חוצה */
     transition: transform 0.3s ease;
   }
   body:not(.series-mode) .movie-card:hover {
     transform: scale(1.03);
   }
+  /* ב-hover מאפשר לראות תוכן שמתחת לגבולות הכרטיס */
+  .movie-card.show-info {
+    overflow: visible !important;
+  }
 
-  /* טקסט משמאל */
+  /* ── טקסט משמאל, פוסטר מימין ───────────────────────────────────────── */
   .movie-content {
     width: 60%;
     padding: 15px;
     box-sizing: border-box;
   }
-
-  /* פוסטר מימין */
   .right-side {
     width: 40%;
     padding: 15px;
@@ -92,7 +95,7 @@
     display: block;
   }
 
-  /* overlay הפרטים */
+  /* ── ה־overlay של הפרטים ─────────────────────────────────────────────── */
   .extra-info {
     position: absolute;
     inset: 0;
@@ -106,7 +109,7 @@
     opacity: 1;
   }
 
-  /* תמונות Hover – גדולות ורוחב מלא תחת הטקסט */
+  /* ── התמונות הנוספות ב-hover ────────────────────────────────────────── */
   .hover-images {
     display: flex;
     justify-content: center;
@@ -114,32 +117,31 @@
     margin-top: 15px;
   }
   .hover-images img {
-    width: calc(50% - 5px);  /* כל תמונה תופסת חצי מרוחב ה-hover */
+    width: calc(50% - 5px); /* שתי תמונות תופסות חצי רוחב ושומרות ריווח */
     height: auto;
     object-fit: contain;
     border-radius: 4px;
   }
 
-  /* ביטול אפקטים במצב סדרות */
+  /* ── ביטול אפקטים במצב סדרות ───────────────────────────────────────── */
   body.series-mode .movie-card {
     transform: none !important;
   }
 
-  /* סרגל פילטר ושורה אחת */
+  /* ── סרגל סינון וחיפוש בשורה אחת ───────────────────────────────────── */
   .filter-bar {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;    /* מונע גלישת פריטים לשורה שנייה */
     gap: 10px;
     justify-content: center;
     margin-bottom: 30px;
   }
   .filter-bar .form-control,
   .filter-bar .form-select {
-    flex: 1 1 auto;
-    max-width: 200px;
+    flex: 0 1 200px;      /* כל שדה בעד 200px */
   }
 
-  /* trailer container (לא נוגע בעיצוב זה אלא לשמור אותו) */
+  /* ── עיצוב מיכל ה־trailer ───────────────────────────────────────────── */
   .trailer-container {
     width: 100%;
     height: 200px;

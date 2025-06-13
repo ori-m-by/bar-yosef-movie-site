@@ -35,7 +35,7 @@ function createMovieCard(data) {
   const awards = data["פרסים והישגים בולטים"]   || "";
   const pg     = data["סרט לילדים / מבוגרים"]   || "";
   // Trim כדי לוודא שאין רווחים מיותרים
-  const viewL  = (data["קישור ל-דרייב"] || "").trim();
+  const viewL  = (data["קישור לדרייב"] || "").trim();
   const imdbL  = (data["קישור ל-IMDb"]    || "").trim();
 
   const card = document.createElement("div");

@@ -46,7 +46,7 @@ function createMovieCard(data) {
   inner.addEventListener("mouseenter", () => inner.classList.add("show-info"));
   inner.addEventListener("mouseleave", () => inner.classList.remove("show-info"));
 
-  // טקסט משמאל
+  // --- עמודת טקסט + hover-overlay בלי שגיאות HTML ---
   const textCol = document.createElement("div");
   textCol.className = "movie-content";
   textCol.innerHTML = `
@@ -65,10 +65,10 @@ function createMovieCard(data) {
 
       ${viewL.startsWith("http")
         ? `<a href="${viewL}" target="_blank" class="btn btn-primary mb-2">▶️ צפייה</a>`
-        : ""}
+        : ``}
       ${imdbL.startsWith("http")
         ? `<a href="${imdbL}" target="_blank" class="btn btn-secondary mb-2 ms-2">📺 IMDb</a>`
-        : ""}
+        : ``}
 
       <div class="hover-images">
         <img src="https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה%20לאתר.png" alt="תמונה לאתר">
@@ -77,7 +77,7 @@ function createMovieCard(data) {
     </div>
   `;
 
-  // פוסטר מימין
+  // --- עמודת פוסטר משני הצדדים ---
   const imgCol = document.createElement("div");
   imgCol.className = "right-side";
   const img = document.createElement("img");
@@ -87,6 +87,7 @@ function createMovieCard(data) {
   img.onerror = () => { img.src = fallbackImage; };
   imgCol.append(img);
 
+  // --- row גמיש ---
   const row = document.createElement("div");
   row.className = "d-flex";
   row.append(textCol, imgCol);
@@ -95,6 +96,7 @@ function createMovieCard(data) {
   card.append(inner);
   return card;
 }
+
 
 
 

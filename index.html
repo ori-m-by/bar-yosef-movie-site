@@ -58,14 +58,8 @@
   </script>
   
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <style>
-  /* הסתרת התוכן עד לוודא UUID */
-  html {
-    visibility: hidden;
-  }
-
-  /* כרטיס סרטים – overflow מאפשר התרחבות מתחת */
+<style>
+  /* כרטיס סרטים – מאפשר למתוח מתחת */
   .movie-card {
     position: relative;
     overflow: visible;
@@ -75,14 +69,22 @@
     transform: scale(1.03);
   }
 
-  /* עמודת טקסט (60%) */
+  /* טקסט משמאל */
   .movie-content {
     width: 60%;
     padding: 15px;
     box-sizing: border-box;
   }
+  /* תמונה שנייה מתחת לטקסט */
+  .text-extra-image {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 4px;
+    margin-top: 10px;
+  }
 
-  /* עמודת פוסטר (40%) + סידור עמודה אנכית */
+  /* פוסטר מימין */
   .right-side {
     width: 40%;
     padding: 15px;
@@ -97,16 +99,16 @@
     object-fit: cover;
     border-radius: 8px;
   }
-  /* התמונה הנוספת מתחת לפוסטר */
+  /* התמונה הראשונה מתחת לפוסטר */
   .poster-extra-image {
     width: 100%;
     height: auto;
-    object-fit: cover;
+    object-fit: contain;
     border-radius: 4px;
     margin-top: 10px;
   }
 
-  /* הפרטים הנגלים ב-hover (extra-info) */
+  /* extra-info – overlay של הפירוט */
   .extra-info {
     display: none;
     background: rgba(255,255,255,0.95);
@@ -117,26 +119,13 @@
     display: block;
   }
 
-  /* התמונות הנוספות ב-hover לצד זו של זו */
-  .hover-images {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 15px;
-  }
-  .hover-images img {
-    width: calc(50% - 5px);
-    height: auto;
-    object-fit: contain;
-    border-radius: 4px;
+  /* כשהhover – מוסיף overlay, אבל מוחק את התמונות הנוספות */
+  .movie-card.show-info .text-extra-image,
+  .movie-card.show-info .poster-extra-image {
+    display: none !important;
   }
 
-  /* ביטול אפקטים במצב סדרות */
-  body.series-mode .movie-card {
-    transform: none !important;
-  }
-
-  /* סרגל סינון וחיפוש אופקי בשורה אחת */
+  /* סרגל פילטר אופקי בשורה אחת */
   .filter-bar {
     display: flex;
     flex-wrap: nowrap;
@@ -149,7 +138,7 @@
     flex: 0 1 200px;
   }
 
-  /* מיכל ה-trailer */
+  /* trailer */
   .trailer-container {
     width: 100%;
     height: 200px;
@@ -162,6 +151,7 @@
     visibility: visible;
   }
 </style>
+
 
 
 

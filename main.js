@@ -69,18 +69,12 @@ function createMovieCard(data) {
         ? `<a href="${imdbL}" target="_blank" class="btn btn-secondary ms-2">📺 IMDb</a>`
         : ""}
       <!-- כאן התמונות שיופיעו ב-hover -->
-      <div class="hover-images">
-       <!-- התמונה הראשונה (PNG) -->
-<img
-  src="https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה%20לאתר.PNG"
-  alt="תמונה לאתר">
+   // ב‐createMovieCard, בתוך ה‐innerHTML של .extra-info
+<div class="hover-images">
+  <img src="https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה%20לאתר.PNG" alt="תמונה לאתר">
+  <img src="https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה%20לאתר%202.JPG" alt="תמונה לאתר 2">
+</div>
 
-<!-- התמונה השנייה (JPG) -->
-<img
-  src="https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה%20לאתר%202.JPG"
-  alt="תמונה לאתר 2">
-
-      </div>
     </div>
   `;
 

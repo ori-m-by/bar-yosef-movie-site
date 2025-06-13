@@ -19,8 +19,8 @@ const fallbackImage = "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movi
 // ────────────────────────────────────────────────────────────────────────────
 // main.js
 
-// main.js
-function createMovieCard(data) {
+// main.jsfunction createMovieCard(data) {
+  // 1) קלט
   const heb    = data["שם הסרט בעברית"]       || "";
   const eng    = data["שם הסרט באנגלית"]      || "";
   const pic    = data["קישור לתמונה"]          || fallbackImage;
@@ -34,11 +34,11 @@ function createMovieCard(data) {
   const score  = data["ציון IMDb"]             || "";
   const awards = data["פרסים והישגים בולטים"]   || "";
   const pg     = data["סרט לילדים / מבוגרים"]   || "";
-  // Trim כדי לוודא שאין רווחים מיותרים
-  const viewL  = (data["קישור לדרייב"] || "").trim();
+  const viewL  = (data["קישור לדרייב"]     || "").trim();
   const imdbL  = (data["קישור ל-IMDb"]    || "").trim();
 
-   const card = document.createElement("div");
+  // 2) קונטיינרים
+  const card = document.createElement("div");
   card.className = "col-12 col-md-6 mb-4";
 
   const inner = document.createElement("div");
@@ -46,13 +46,41 @@ function createMovieCard(data) {
   inner.addEventListener("mouseenter", () => inner.classList.add("show-info"));
   inner.addEventListener("mouseleave", () => inner.classList.remove("show-info"));
 
-  // … יצירת textCol כפי שהיה …
+  // 3) עמודת טקסט
+  const textCol = document.createElement("div");
+  textCol.className = "movie-content";
+  textCol.innerHTML = `
+    <h5 class="card-title">${heb}</h5>
+    <h6 class="card-subtitle mb-2 text-muted">${eng}</h6>
+    <p><strong>שנה:</strong> ${year}<br><strong>ז'אנר:</strong> ${genre}</p>
+    <p>${desc}</p>
+    <div class="extra-info">
+      <p><strong>במאי:</strong> ${dir}<br>
+         <strong>שחקנים:</strong> ${actors}<br>
+         <strong>תסריטאי:</strong> ${writer}<br>
+         <strong>מפיק:</strong> ${prod}<br>
+         <strong>IMDB:</strong> ${score}<br>
+         <strong>פרסים:</strong> ${awards}<br>
+         <strong>קהל יעד:</strong> ${pg}</p>
 
-  // עמודת הפוסטר (מימין)
+      ${viewL.startsWith("http")
+        ? `<a href="${viewL}" target="_blank" class="btn btn-primary mb-2">▶️ צפייה</a>`
+        : ""}
+      ${imdbL.startsWith("http")
+        ? `<a href="${imdbL}" target="_blank" class="btn btn-secondary mb-2 ms-2">📺 IMDb</a>`
+        : ""}
+
+      <div class="hover-images">
+        <img src="https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה%20לאתר.png" alt="תמונה לאתר">
+        <img src="https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה%20לאתר%202.jpg" alt="תמונה לאתר 2">
+      </div>
+    </div>
+  `;
+
+  // 4) עמודת פוסטר + extra poster
   const imgCol = document.createElement("div");
   imgCol.className = "right-side";
 
-  // 1) הפוסטר הראשי
   const img = document.createElement("img");
   img.src = pic;
   img.alt = heb;
@@ -60,14 +88,13 @@ function createMovieCard(data) {
   img.onerror = () => { img.src = fallbackImage; };
   imgCol.append(img);
 
-  // 2) התמונה השנייה – עכשיו מתחת לפוסטר
   const extraPoster = document.createElement("img");
   extraPoster.src = "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה%20לאתר%202.jpg";
   extraPoster.alt = "תמונה לאתר 2";
   extraPoster.className = "poster-extra-image";
   imgCol.append(extraPoster);
 
-  // המשך הרכבה
+  // 5) row והרכבה סופית
   const row = document.createElement("div");
   row.className = "d-flex";
   row.append(textCol, imgCol);
@@ -76,6 +103,7 @@ function createMovieCard(data) {
   card.append(inner);
   return card;
 }
+
 
 
 

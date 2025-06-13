@@ -78,7 +78,7 @@ function createMovieCard(data) {
 
 <!-- תמונה שנייה (JPG, גדולה) -->
 <img
-  src="https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה%20לאתר%202.JPG"
+  src="https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה%20לאתר%202.jpg"
   alt="תמונה לאתר 2">
 
 </div>

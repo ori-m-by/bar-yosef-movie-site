@@ -18,6 +18,8 @@ const fallbackImage = "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movi
 // 1) createMovieCard
 // ────────────────────────────────────────────────────────────────────────────
 // main.js
+
+
 function createMovieCard(data) {
   // 1) נתונים
   const heb    = data["שם הסרט בעברית"]     || "";
@@ -107,6 +109,7 @@ function createMovieCard(data) {
   card.append(inner);
   return card;
 }
+
 
 
 

@@ -70,8 +70,8 @@ function createMovieCard(data) {
         : ""}
       <!-- כאן התמונות שיופיעו ב-hover -->
       <div class="hover-images">
-        <img src="https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה%20לאתר.PNG" alt="תמונה לאתר">
-        <img src="https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה%20לאתר%202.JPG" alt="תמונה לאתר 2">
+        <img src="https://github.com/ori-m-by/bar-yosef-movie-site/blob/main/%D7%AA%D7%9E%D7%95%D7%A0%D7%94%20%D7%9C%D7%90%D7%AA%D7%A8.png?raw=true" alt="תמונה לאתר">
+        <img src="https://github.com/ori-m-by/bar-yosef-movie-site/blob/main/%D7%AA%D7%9E%D7%95%D7%A0%D7%94%20%D7%9C%D7%90%D7%AA%D7%A8%202.jpg?raw=true" alt="תמונה לאתר 2">
       </div>
     </div>
   `;

@@ -60,23 +60,18 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
   
-  
   <style>
-  /* ── עיצוב כללי של הכרטיס ───────────────────────────────────────────── */
+  /* ── עיצוב הכרטיס העיקרי ───────────────────────────────────────────── */
   .movie-card {
     position: relative;
-    overflow: hidden;             /* לפני hover – חותך חוצה */
+    overflow: visible;           /* מאפשר לכרטיס לגדול במקום לחתוך */
     transition: transform 0.3s ease;
   }
   body:not(.series-mode) .movie-card:hover {
     transform: scale(1.03);
   }
-  /* ב-hover מאפשר לראות תוכן שמתחת לגבולות הכרטיס */
-  .movie-card.show-info {
-    overflow: visible !important;
-  }
 
-  /* ── טקסט משמאל, פוסטר מימין ───────────────────────────────────────── */
+  /* ── טקסט משמאל ופוסטר מימין ──────────────────────────────────────── */
   .movie-content {
     width: 60%;
     padding: 15px;
@@ -95,21 +90,18 @@
     display: block;
   }
 
-  /* ── ה־overlay של הפרטים ─────────────────────────────────────────────── */
+  /* ── extra-info בתזרים רגיל (לא absolute) ─────────────────────────── */
   .extra-info {
-    position: absolute;
-    inset: 0;
+    display: none;               /* מוסתר כברירת מחדל */
     background: rgba(255,255,255,0.95);
     padding: 20px;
     box-sizing: border-box;
-    opacity: 0;
-    transition: opacity 0.3s ease;
   }
   .movie-card.show-info .extra-info {
-    opacity: 1;
+    display: block;              /* מופיע ב־hover ובעצם מורחב מתחת לכותרת */
   }
 
-  /* ── התמונות הנוספות ב-hover ────────────────────────────────────────── */
+  /* ── התמונות הנוספות מתחת extra-info ────────────────────────────── */
   .hover-images {
     display: flex;
     justify-content: center;
@@ -117,31 +109,31 @@
     margin-top: 15px;
   }
   .hover-images img {
-    width: calc(50% - 5px); /* שתי תמונות תופסות חצי רוחב ושומרות ריווח */
+    width: calc(50% - 5px);      /* כל תמונה תופסת חצי רוחב (עם ריווח) */
     height: auto;
     object-fit: contain;
     border-radius: 4px;
   }
 
-  /* ── ביטול אפקטים במצב סדרות ───────────────────────────────────────── */
+  /* ── ביטול אפקטים מיותרים במצב סדרות ───────────────────────────── */
   body.series-mode .movie-card {
     transform: none !important;
   }
 
-  /* ── סרגל סינון וחיפוש בשורה אחת ───────────────────────────────────── */
+  /* ── סרגל פילטר + חיפוש בשורה אחת ───────────────────────────────── */
   .filter-bar {
     display: flex;
-    flex-wrap: nowrap;    /* מונע גלישת פריטים לשורה שנייה */
+    flex-wrap: nowrap;
     gap: 10px;
     justify-content: center;
     margin-bottom: 30px;
   }
   .filter-bar .form-control,
   .filter-bar .form-select {
-    flex: 0 1 200px;      /* כל שדה בעד 200px */
+    flex: 0 1 200px;
   }
 
-  /* ── עיצוב מיכל ה־trailer ───────────────────────────────────────────── */
+  /* ── trailer-container (קיים) ─────────────────────────────────────── */
   .trailer-container {
     width: 100%;
     height: 200px;
@@ -154,7 +146,6 @@
     visibility: visible;
   }
 </style>
-
 
 
 

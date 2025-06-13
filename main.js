@@ -19,34 +19,34 @@ const fallbackImage = "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movi
 // ────────────────────────────────────────────────────────────────────────────
 // main.js
 
-function createMovieCard(data) {
-  const heb     = data["שם הסרט בעברית"]        || "";
-  const eng     = data["שם הסרט באנגלית"]       || "";
-  const pic     = data["קישור לתמונה"]           || fallbackImage;
-  const trailer = data["טריילר"]                || "";
-  const year    = data["שנת יציאה"]             || "";
-  const genre   = data["ז'אנר"]                  || "";
-  const desc    = data["תיאור קצר"]              || "";
-  const dir     = data["במאי"]                   || "";
-  const actors  = data["שחקנים ראשיים"]         || "";
-  const writer  = data["תסריטאי"]                || "";
-  const prod    = data["מפיק"]                   || "";
-  const score   = data["ציון IMDb"]              || "";
-  const awards  = data["פרסים והישגים בולטים"]    || "";
-  const pg      = data["סרט לילדים / מבוגרים"]    || "";
-  const viewL   = data["קישור ל-דרייב"]           || "";
-  const imdbL   = data["קישור ל-IMDb"]            || "";
+// main.js
 
-  // הכרטיס החיצוני
+function createMovieCard(data) {
+  const heb     = data["שם הסרט בעברית"]      || "";
+  const eng     = data["שם הסרט באנגלית"]     || "";
+  const pic     = data["קישור לתמונה"]         || fallbackImage;
+  const year    = data["שנת יציאה"]           || "";
+  const genre   = data["ז'אנר"]                || "";
+  const desc    = data["תיאור קצר"]            || "";
+  const dir     = data["במאי"]                 || "";
+  const actors  = data["שחקנים ראשיים"]       || "";
+  const writer  = data["תסריטאי"]              || "";
+  const prod    = data["מפיק"]                 || "";
+  const score   = data["ציון IMDb"]            || "";
+  const awards  = data["פרסים והישגים בולטים"]  || "";
+  const pg      = data["סרט לילדים / מבוגרים"]  || "";
+  const viewL   = data["קישור ל-דרייב"]         || "";
+  const imdbL   = data["קישור ל-IMDb"]          || "";
+
   const card = document.createElement("div");
   card.className = "col-12 col-md-6 mb-4";
 
   const inner = document.createElement("div");
-  inner.className = "card h-100 shadow-sm movie-card";
+  inner.className = "card shadow-sm movie-card";
   inner.addEventListener("mouseenter", () => inner.classList.add("show-info"));
   inner.addEventListener("mouseleave", () => inner.classList.remove("show-info"));
 
-  // עמודת טקסט (משמאל)
+  // טקסט משמאל
   const textCol = document.createElement("div");
   textCol.className = "movie-content";
   textCol.innerHTML = `
@@ -62,31 +62,22 @@ function createMovieCard(data) {
          <strong>IMDB:</strong> ${score}<br>
          <strong>פרסים:</strong> ${awards}<br>
          <strong>קהל יעד:</strong> ${pg}</p>
+
       ${viewL.startsWith("http")
-        ? `<a href="${viewL}" target="_blank" class="btn btn-primary">▶️ צפייה</a>`
+        ? `<a href="${viewL}" target="_blank" class="btn btn-primary mb-2">▶️ צפייה</a>`
         : ""}
       ${imdbL.startsWith("http")
-        ? `<a href="${imdbL}" target="_blank" class="btn btn-secondary ms-2">📺 IMDb</a>`
+        ? `<a href="${imdbL}" target="_blank" class="btn btn-secondary mb-2 ms-2">📺 IMDb</a>`
         : ""}
-      <!-- כאן התמונות שיופיעו ב-hover -->
-   // ב‐createMovieCard, בתוך ה‐innerHTML של .extra-info
-<div class="hover-images">
- <!-- תמונה ראשונה (png, קטנה) -->
-<img
-  src="https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה%20לאתר.png"
-  alt="תמונה לאתר">
 
-<!-- תמונה שנייה (JPG, גדולה) -->
-<img
-  src="https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה%20לאתר%202.jpg"
-  alt="תמונה לאתר 2">
-
-</div>
-
+      <div class="hover-images">
+        <img src="https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה%20לאתר.png" alt="תמונה לאתר">
+        <img src="https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה%20לאתר%202.jpg" alt="תמונה לאתר 2">
+      </div>
     </div>
   `;
 
-  // עמודת תמונה (מימין)
+  // פוסטר מימין
   const imgCol = document.createElement("div");
   imgCol.className = "right-side";
   const img = document.createElement("img");
@@ -96,15 +87,15 @@ function createMovieCard(data) {
   img.onerror = () => { img.src = fallbackImage; };
   imgCol.append(img);
 
-  // ה־row שמאגד את שני העמודים
   const row = document.createElement("div");
-  row.className = "d-flex flex-row align-items-start";
+  row.className = "d-flex";
   row.append(textCol, imgCol);
 
   inner.append(row);
   card.append(inner);
   return card;
 }
+
 
 
 // ────────────────────────────────────────────────────────────────────────────

@@ -58,91 +58,91 @@
   </script>
   
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    /* הכרטיס – יחסות + transition */
-    .movie-card {
-      position: relative;
-      transition: transform 0.3s ease;
-    }
-    /* בסרטים בלבד: scale on hover */
-    body:not(.series-mode) .movie-card:hover {
-      transform: scale(1.05);
-    }
+<!-- index.html או styles.css ( style block ) -->
+<style>
+  /* container cards */
+  .movie-card {
+    position: relative;
+    transition: transform 0.3s ease;
+  }
 
-    /* תמונות של סרט וסדרה */
-    .movie-card .left-side img,
-    .movie-card .card-img-top {
-      width: 100%;
-      height: auto;
-      object-fit: cover;
-      border-radius: 8px;
-      display: block;
-    }
+  /* בסרטים: scale on hover */
+  body:not(.series-mode) .movie-card:hover {
+    transform: scale(1.05);
+  }
 
-    .left-side {
-      width: 40%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+  /* עמודה שמאלית: טקסט */
+  .movie-content {
+    width: 60%;
+    padding: 10px 15px;
+    position: relative;
+  }
 
-    /* טריילר קבוע מקום, מוסתר כברירת מחדל */
-    .trailer-container {
-      width: 100%;
-      height: 200px;
-      margin-bottom: 10px;
-      border-radius: 10px;
-      overflow: hidden;
-      visibility: hidden;
-    }
-    /* בתצוגת סרטים + כשלחצו על הכרטיס (show-info) – מראים */
-    .movie-card.show-info:not(.series-mode) .trailer-container {
-      visibility: visible;
-    }
+  /* עמודה ימנית: פוסטר */
+  .right-side {
+    width: 40%;
+    padding-left: 15px;
+  }
+  .right-side .movie-image {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+  }
 
-    .movie-content {
-      width: 60%;
-      padding: 10px 15px;
-    }
+  /* האזור הנסתר שמתחת לכיתוב, נחשף ב-hover */
+  .movie-card .extra-info {
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.95);
+    padding: 20px;
+    box-sizing: border-box;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    overflow-y: auto;
+    z-index: 10;
+  }
+  .movie-card.show-info .extra-info {
+    opacity: 1;
+    pointer-events: auto;
+  }
 
-    /* overlay של extra-info – תמיד בשטח, שקוף עד ש־show-info */
-    .movie-card .extra-info {
-      position: absolute;
-      inset: 0;
-      background: rgba(255,255,255,0.95);
-      padding: 20px;
-      box-sizing: border-box;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-      overflow-y: auto;
-      z-index: 10;
-    }
-    /* כשהכרטיס ב״show-info״ – הופך לגלוי, אבל עדיין pointer-events רק על התכנים */
-    .movie-card.show-info .extra-info {
-      opacity: 1;
-      /* נשאיר pointer-events:none, וניתן אותו רק לילדים: */
-    }
-    .movie-card.show-info .extra-info button,
-    .movie-card.show-info .extra-info a {
-      pointer-events: auto;
-    }
+  /* תמונות Hover: מוסתרות כברירת מחדל */
+  .hover-images {
+    display: none;
+    margin-top: 15px;
+    text-align: center;
+  }
+  /* נחשפות כשיש hover */
+  .movie-card.show-info .hover-images {
+    display: block;
+  }
+  .hover-images img {
+    max-width: 45%;
+    height: auto;
+    margin: 0 2.5%;
+    border-radius: 4px;
+  }
 
-    /* בתצוגת סדרות – בוטלים scale וטריילר */
-    body.series-mode .movie-card {
-      transform: none !important;
-    }
-    body.series-mode .movie-card .trailer-container {
-      visibility: hidden !important;
-    }
+  /* מבטלים scale וטריילר בסדרה */
+  body.series-mode .movie-card {
+    transform: none !important;
+  }
+  body.series-mode .movie-card .trailer-container {
+    visibility: hidden !important;
+  }
 
-    .filter-bar { margin-bottom: 30px; }
-    .form-select, .form-control {
-      max-width: 200px;
-      display: inline-block;
-      margin-left: 10px;
-    }
-  </style>
+  /* סגנונות קיימים נוספים (כדוגמה) */
+  .filter-bar { margin-bottom: 30px; }
+  .form-select, .form-control {
+    max-width: 200px;
+    display: inline-block;
+    margin-left: 10px;
+  }
+</style>
+
 
 </head>
 <body class="bg-light">

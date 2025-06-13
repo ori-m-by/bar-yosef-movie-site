@@ -17,45 +17,39 @@ const fallbackImage = "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movi
 // ────────────────────────────────────────────────────────────────────────────
 // 1) createMovieCard
 // ────────────────────────────────────────────────────────────────────────────
-function createMovieCard(data) {
-  const heb   = data["שם הסרט בעברית"]        || "";
-  const eng   = data["שם הסרט באנגלית"]       || "";
-  const pic   = data["קישור לתמונה"]           || fallbackImage;
-  const trailer = data["טריילר"]               || "";
-  const year  = data["שנת יציאה"]             || "";
-  const genre = data["ז'אנר"]                  || "";
-  const desc  = data["תיאור קצר"]             || "";
-  const dir   = data["במאי"]                   || "";
-  const actors = data["שחקנים ראשיים"]        || "";
-  const writer = data["תסריטאי"]               || "";
-  const prod   = data["מפיק"]                  || "";
-  const score  = data["ציון IMDb"]             || "";
-  const awards = data["פרסים והישגים בולטים"]   || "";
-  const pg     = data["סרט לילדים / מבוגרים"]   || "";
-  const viewL  = data["קישור לדרייב"]           || "";
-  const imdbL  = data["קישור ל-IMDb"]           || "";
+// main.js
 
+function createMovieCard(data) {
+  const heb     = data["שם הסרט בעברית"]        || "";
+  const eng     = data["שם הסרט באנגלית"]       || "";
+  const pic     = data["קישור לתמונה"]           || fallbackImage;
+  const trailer = data["טריילר"]                || "";
+  const year    = data["שנת יציאה"]             || "";
+  const genre   = data["ז'אנר"]                  || "";
+  const desc    = data["תיאור קצר"]              || "";
+  const dir     = data["במאי"]                   || "";
+  const actors  = data["שחקנים ראשיים"]         || "";
+  const writer  = data["תסריטאי"]                || "";
+  const prod    = data["מפיק"]                   || "";
+  const score   = data["ציון IMDb"]              || "";
+  const awards  = data["פרסים והישגים בולטים"]    || "";
+  const pg      = data["סרט לילדים / מבוגרים"]    || "";
+  const viewL   = data["קישור ל-דרייב"]           || "";
+  const imdbL   = data["קישור ל-IMDb"]            || "";
+
+  // הכרטיס החיצוני
   const card = document.createElement("div");
   card.className = "col-12 col-md-6 mb-4";
 
   const inner = document.createElement("div");
   inner.className = "card h-100 shadow-sm movie-card";
-  // hover via JS
   inner.addEventListener("mouseenter", () => inner.classList.add("show-info"));
   inner.addEventListener("mouseleave", () => inner.classList.remove("show-info"));
 
-  const trailerWr = document.createElement("div");
-  trailerWr.className = "trailer-container";
-
-  const img = document.createElement("img");
-  img.src = pic;
-  img.alt = heb;
-  img.className = "movie-image";
-  img.onerror = () => { img.src = fallbackImage; };
-
-  const content = document.createElement("div");
-  content.className = "movie-content";
-  content.innerHTML = `
+  // עמודת טקסט (משמאל)
+  const textCol = document.createElement("div");
+  textCol.className = "movie-content";
+  textCol.innerHTML = `
     <h5 class="card-title">${heb}</h5>
     <h6 class="card-subtitle mb-2 text-muted">${eng}</h6>
     <p><strong>שנה:</strong> ${year}<br><strong>ז'אנר:</strong> ${genre}</p>
@@ -69,26 +63,39 @@ function createMovieCard(data) {
          <strong>פרסים:</strong> ${awards}<br>
          <strong>קהל יעד:</strong> ${pg}</p>
       ${viewL.startsWith("http")
-        ? `<a href="${viewL}" target="_blank" class="btn btn-primary"> ▶️ צפייה </a>`
+        ? `<a href="${viewL}" target="_blank" class="btn btn-primary">▶️ צפייה</a>`
         : ""}
       ${imdbL.startsWith("http")
         ? `<a href="${imdbL}" target="_blank" class="btn btn-secondary ms-2">📺 IMDb</a>`
         : ""}
+      <!-- כאן התמונות שיופיעו ב-hover -->
+      <div class="hover-images">
+        <img src="https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה%20לאתר.PNG" alt="תמונה לאתר">
+        <img src="https://raw.githubusercontent.com/ori-m-by/bar-yosef-movie-site/main/תמונה%20לאתר%202.JPG" alt="תמונה לאתר 2">
+      </div>
     </div>
   `;
 
-  const leftCol = document.createElement("div");
-  leftCol.className = "left-side";
-  leftCol.append(trailerWr, img);
+  // עמודת תמונה (מימין)
+  const imgCol = document.createElement("div");
+  imgCol.className = "right-side";
+  const img = document.createElement("img");
+  img.src = pic;
+  img.alt = heb;
+  img.className = "movie-image";
+  img.onerror = () => { img.src = fallbackImage; };
+  imgCol.append(img);
 
+  // ה־row שמאגד את שני העמודים
   const row = document.createElement("div");
-  row.className = "d-flex flex-row";
-  row.append(leftCol, content);
+  row.className = "d-flex flex-row align-items-start";
+  row.append(textCol, imgCol);
 
   inner.append(row);
   card.append(inner);
   return card;
 }
+
 
 // ────────────────────────────────────────────────────────────────────────────
 // 2) createSeriesCard

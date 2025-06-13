@@ -114,7 +114,7 @@ function createSeriesCard(s) {
   card.className = "col-12 col-md-6 mb-4";
 
   const inner = document.createElement("div");
-  inner.className = "card h-100 shadow-sm movie-card";
+inner.className = "card shadow-sm movie-card";
   inner.addEventListener("mouseenter", () => inner.classList.add("show-info"));
   inner.addEventListener("mouseleave", () => inner.classList.remove("show-info"));
 

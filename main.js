@@ -20,23 +20,23 @@ const fallbackImage = "https://raw.githubusercontent.com/ori-m-by/bar-yosef-movi
 // main.js
 
 // main.js
-
 function createMovieCard(data) {
-  const heb     = data["שם הסרט בעברית"]      || "";
-  const eng     = data["שם הסרט באנגלית"]     || "";
-  const pic     = data["קישור לתמונה"]         || fallbackImage;
-  const year    = data["שנת יציאה"]           || "";
-  const genre   = data["ז'אנר"]                || "";
-  const desc    = data["תיאור קצר"]            || "";
-  const dir     = data["במאי"]                 || "";
-  const actors  = data["שחקנים ראשיים"]       || "";
-  const writer  = data["תסריטאי"]              || "";
-  const prod    = data["מפיק"]                 || "";
-  const score   = data["ציון IMDb"]            || "";
-  const awards  = data["פרסים והישגים בולטים"]  || "";
-  const pg      = data["סרט לילדים / מבוגרים"]  || "";
-  const viewL   = data["קישור ל-דרייב"]         || "";
-  const imdbL   = data["קישור ל-IMDb"]          || "";
+  const heb    = data["שם הסרט בעברית"]       || "";
+  const eng    = data["שם הסרט באנגלית"]      || "";
+  const pic    = data["קישור לתמונה"]          || fallbackImage;
+  const year   = data["שנת יציאה"]            || "";
+  const genre  = data["ז'אנר"]                 || "";
+  const desc   = data["תיאור קצר"]             || "";
+  const dir    = data["במאי"]                  || "";
+  const actors = data["שחקנים ראשיים"]        || "";
+  const writer = data["תסריטאי"]               || "";
+  const prod   = data["מפיק"]                  || "";
+  const score  = data["ציון IMDb"]             || "";
+  const awards = data["פרסים והישגים בולטים"]   || "";
+  const pg     = data["סרט לילדים / מבוגרים"]   || "";
+  // Trim כדי לוודא שאין רווחים מיותרים
+  const viewL  = (data["קישור ל-דרייב"] || "").trim();
+  const imdbL  = (data["קישור ל-IMDb"]    || "").trim();
 
   const card = document.createElement("div");
   card.className = "col-12 col-md-6 mb-4";
@@ -46,7 +46,7 @@ function createMovieCard(data) {
   inner.addEventListener("mouseenter", () => inner.classList.add("show-info"));
   inner.addEventListener("mouseleave", () => inner.classList.remove("show-info"));
 
-  // --- עמודת טקסט + hover-overlay בלי שגיאות HTML ---
+  // עמודת הטקסט (משמאל) עם כפתור “▶️ צפייה” תקין
   const textCol = document.createElement("div");
   textCol.className = "movie-content";
   textCol.innerHTML = `
@@ -77,7 +77,7 @@ function createMovieCard(data) {
     </div>
   `;
 
-  // --- עמודת פוסטר משני הצדדים ---
+  // עמודת הפוסטר (מימין)
   const imgCol = document.createElement("div");
   imgCol.className = "right-side";
   const img = document.createElement("img");
@@ -87,7 +87,7 @@ function createMovieCard(data) {
   img.onerror = () => { img.src = fallbackImage; };
   imgCol.append(img);
 
-  // --- row גמיש ---
+  // איחוד לעמודה גמישה
   const row = document.createElement("div");
   row.className = "d-flex";
   row.append(textCol, imgCol);
@@ -96,6 +96,7 @@ function createMovieCard(data) {
   card.append(inner);
   return card;
 }
+
 
 
 

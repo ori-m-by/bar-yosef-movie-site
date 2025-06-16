@@ -59,6 +59,49 @@
   
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
+  /* הוסף ל־styles.css או בתוך <style> ב־<head> */
+
+.bug-report-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  background: #dc3545;
+  color: #fff;
+  font-size: 24px;
+  line-height: 48px;
+  text-align: center;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  text-decoration: none;
+  z-index: 1000;
+  cursor: pointer;
+}
+
+/* Tooltip פשוט באמצעות data-attribute */
+.bug-report-button::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 60px;       /* מעל הכפתור */
+  right: 50%;
+  transform: translateX(50%);
+  background: rgba(0,0,0,0.8);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  font-size: 14px;
+}
+
+/* כשעומדים עם העכבר – מציגים את ה־tooltip */
+.bug-report-button:hover::after {
+  opacity: 1;
+}
+
   /* כרטיס סרטים – מאפשר למתוח מתחת */
   .movie-card {
     position: relative;
@@ -195,5 +238,11 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="main.js"></script>
+  <a href="https://docs.google.com/forms/d/e/1FAIpQLSePUwUmQBi4iJN5FjptxlrWIuDG7z1FEe7lSyVmBkzo6eRVMw/viewform?usp=dialog"
+   target="_blank"
+   class="bug-report-button"
+   data-tooltip="טופס תקלות/דיווח על פרק/סרט">
+  ⚠️
+</a>
 </body>
 </html>
